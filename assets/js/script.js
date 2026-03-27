@@ -1724,8 +1724,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkForUpdates();
             }
         });
-    } else {
-        console.log('⚠️ No schedule table or airport board found - sync not started');
     }
 });
 

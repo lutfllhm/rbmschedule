@@ -31,8 +31,8 @@ $csrfToken = getCsrfToken();
     <link rel="stylesheet" href="/rbmschedule/assets/css/modern-ui.css">
     <!-- Font Awesome with multiple CDN fallbacks -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <!-- Fallback Font Awesome CDN -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+    <!-- Fallback Font Awesome CDN (without SRI to avoid mismatched hash blocking) -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" crossorigin="anonymous">
     <!-- Fallback CSS jika Font Awesome tidak ter-load -->
     <link rel="stylesheet" href="/rbmschedule/assets/css/fontawesome-fallback.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
