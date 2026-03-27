@@ -1,0 +1,12 @@
+.git
+.github
+.kombai
+node_modules
+vendor
+logs/*.log
+*.log
+*.tmp
+*.cache
+.env
+.env.local
+.env.*.local
