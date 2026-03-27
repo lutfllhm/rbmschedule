@@ -1,0 +1,66 @@
+# RBM Schedule - Git Ignore File
+
+# Logs
+logs/
+*.log
+error.log
+application.log
+
+# Database
+*.sql
+database_backup/
+*.db
+*.sqlite
+
+# Configuration (if contains sensitive data)
+# config/database.php
+
+# IDE
+.vscode/
+.idea/
+.kombai/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.cache
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# PHP
+vendor/
+composer.lock
+.phpunit.result.cache
+
+# Node modules (if using npm)
+node_modules/
+package-lock.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Uploads (if any)
+uploads/
+files/
+
+

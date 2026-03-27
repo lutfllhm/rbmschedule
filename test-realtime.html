@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Sync Test - RBM Schedule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00d4ff;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .test-section {
+            background: #141b3d;
+            border: 2px solid #00d4ff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .test-section h2 {
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .status-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-dot.active {
+            background: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+        }
+        
+        .status-dot.inactive {
+            background: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .log-container {
+            background: #000;
+            border: 1px solid #00d4ff;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-left: 3px solid #00d4ff;
+            padding-left: 1rem;
+        }
+        
+        .log-entry.success {
+            border-left-color: #10b981;
+            color: #86efac;
+        }
+        
+        .log-entry.error {
+            border-left-color: #ef4444;
+            color: #fca5a5;
+        }
+        
+        .log-entry.info {
+            border-left-color: #3b82f6;
+            color: #93c5fd;
+        }
+        
+        .timestamp {
+            color: #8b92b8;
+            font-size: 0.8rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #8b92b8;
+            margin-top: 0.5rem;
+        }
+        
+        .btn {
+            background: #00d4ff;
+            color: #0a0e27;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn:hover {
+            background: #00b8e6;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            background: rgba(251, 191, 36, 0.1);
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .instructions h3 {
+            color: #fbbf24;
+            margin-bottom: 1rem;
+        }
+        
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: #fde68a;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Real-Time Sync Test Dashboard</h1>
+        
+        <div class="instructions">
+            <h3>📋 Cara Test Real-Time Sync:</h3>
+            <ol>
+                <li>Buka halaman ini di <strong>2 browser/tab berbeda</strong> (atau 2 PC berbeda)</li>
+                <li>Buka juga <strong>Dashboard</strong> di browser lain</li>
+                <li>Tambah/Edit schedule di salah satu browser</li>
+                <li>Lihat perubahan otomatis muncul di browser lain <strong>tanpa refresh!</strong></li>
+                <li>Monitor log di bawah untuk melihat aktivitas sync</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔌 Connection Status</h2>
+            <div class="status">
+                <div class="status-dot active" id="connectionDot"></div>
+                <div>
+                    <div><strong>Status:</strong> <span id="connectionStatus">Connected</span></div>
+                    <div class="timestamp">Last check: <span id="lastCheck">-</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Sync Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="totalChecks">0</div>
+                    <div class="stat-label">Total Checks</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="updatesDetected">0</div>
+                    <div class="stat-label">Updates Detected</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="currentSchedules">0</div>
+                    <div class="stat-label">Current Schedules</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="syncInterval">2s</div>
+                    <div class="stat-label">Sync Interval</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Activity Log</h2>
+            <button class="btn" onclick="clearLog()" style="margin-bottom: 1rem;">Clear Log</button>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+    </div>
+    
+    <script>
+        let lastCheckTimestamp = Math.floor(Date.now() / 1000);
+        let syncInterval = null;
+        let isSyncing = false;
+        let stats = {
+            totalChecks: 0,
+            updatesDetected: 0,
+            currentSchedules: 0
+        };
+        
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `
+                <span class="timestamp">[${timestamp}]</span> ${message}
+            `;
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('totalChecks').textContent = stats.totalChecks;
+            document.getElementById('updatesDetected').textContent = stats.updatesDetected;
+            document.getElementById('currentSchedules').textContent = stats.currentSchedules;
+        }
+        
+        function updateConnectionStatus(connected) {
+            const dot = document.getElementById('connectionDot');
+            const status = document.getElementById('connectionStatus');
+            const lastCheck = document.getElementById('lastCheck');
+            
+            if (connected) {
+                dot.className = 'status-dot active';
+                status.textContent = 'Connected & Syncing';
+            } else {
+                dot.className = 'status-dot inactive';
+                status.textContent = 'Connection Error';
+            }
+            
+            lastCheck.textContent = new Date().toLocaleTimeString();
+        }
+        
+        function checkForUpdates() {
+            if (isSyncing) return;
+            
+            isSyncing = true;
+            stats.totalChecks++;
+            updateStats();
+            
+            addLog('🔍 Checking for updates...', 'info');
+            
+            fetch(`/rbmschedule/api/check_updates.php?last_check=${lastCheckTimestamp}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateConnectionStatus(true);
+                    
+                    if (data.success && data.has_updates) {
+                        lastCheckTimestamp = data.timestamp;
+                        stats.updatesDetected++;
+                        updateStats();
+                        addLog('✅ NEW UPDATE DETECTED! Fetching latest data...', 'success');
+                        refreshScheduleData();
+                    } else {
+                        addLog('ℹ️ No updates - data is current', 'info');
+                    }
+                })
+                .catch(error => {
+                    updateConnectionStatus(false);
+                    addLog('❌ Error checking updates: ' + error.message, 'error');
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    isSyncing = false;
+                });
+        }
+        
+        function refreshScheduleData() {
+            fetch('/rbmschedule/api/get_schedules.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        stats.currentSchedules = data.schedules.length;
+                        updateStats();
+                        addLog(`📊 Data refreshed! Total schedules: ${data.schedules.length}`, 'success');
+                        
+                        // Show schedule details
+                        const pending = data.schedules.filter(s => s.status === 'Not Started').length;
+                        const running = data.schedules.filter(s => s.status === 'Running').length;
+                        const finish = data.schedules.filter(s => s.status === 'Finish').length;
+                        
+                        addLog(`   └─ Not Started: ${pending}, Running: ${running}, Finish: ${finish}`, 'info');
+                    }
+                })
+                .catch(error => {
+                    addLog('❌ Error fetching schedules: ' + error.message, 'error');
+                    console.error('Error:', error);
+                });
+        }
+        
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+            addLog('🗑️ Log cleared', 'info');
+        }
+        
+        function startRealtimeSync() {
+            addLog('🚀 Real-time sync started!', 'success');
+            syncInterval = setInterval(checkForUpdates, 2000);
+            
+            // Initial data fetch
+            refreshScheduleData();
+        }
+        
+        function stopRealtimeSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+                addLog('⏸️ Real-time sync stopped', 'info');
+            }
+        }
+        
+        // Start sync when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('🎯 Test dashboard initialized', 'success');
+            addLog('⏱️ Sync interval: 2 seconds', 'info');
+            startRealtimeSync();
+            
+            // Stop sync when page is hidden
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopRealtimeSync();
+                    addLog('👁️ Page hidden - sync paused', 'info');
+                } else {
+                    lastCheckTimestamp = Math.floor(Date.now() / 1000);
+                    startRealtimeSync();
+                    addLog('👁️ Page visible - sync resumed', 'success');
+                    checkForUpdates(); // Immediate check
+                }
+            });
+        });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            stopRealtimeSync();
+        });
+    </script>
+</body>
+</html>
