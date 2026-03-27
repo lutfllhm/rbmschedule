@@ -254,12 +254,14 @@ closeDBConnection($conn);
         .rows:hover .rows-wrapper.animate {
             animation-play-state: paused;
         }
-        /* Animasi scroll dari bawah ke atas */
+        /* Animasi scroll dari bawah ke atas - seamless loop */
         @keyframes scrollUp {
             0% {
                 transform: translateY(0);
             }
             100% {
+                /* Bergerak tepat setengah tinggi (karena konten diduplikasi) */
+                /* Ini akan membuat animasi seamless loop kembali ke awal */
                 transform: translateY(-50%);
             }
         }
@@ -753,9 +755,11 @@ closeDBConnection($conn);
                     }
                 });
                 
-                // Jika konten lebih tinggi dari container, aktifkan animasi dengan duplikasi
-                // Atau jika ada lebih dari 1 schedule, aktifkan animasi untuk efek running text
-                if (contentHeight > containerHeight || actualRows.length > 1) {
+                // PERBAIKAN: Selalu aktifkan animasi jika ada schedule (untuk running text effect)
+                // Bahkan jika hanya 1 schedule, tetap buat duplikasi dan animasi agar terlihat seperti running text
+                const shouldAnimate = actualRows.length > 0;
+                
+                if (shouldAnimate) {
                     // Jika belum ada duplikasi, buat duplikasi untuk seamless loop
                     if (!isDuplicated) {
                         const fragment = document.createDocumentFragment();
@@ -766,11 +770,11 @@ closeDBConnection($conn);
                     }
                     
                     // Hitung durasi animasi berdasarkan jumlah schedule
-                    // Gunakan konfigurasi constants di atas; durasi lebih lama => animasi lebih pelan
+                    // Durasi lebih lama => animasi lebih pelan dan mudah dibaca
                     const scheduleCount = actualRows.length;
                     const baseDuration = Math.max(ROW_SCROLL_MIN_DURATION, Math.min(ROW_SCROLL_MAX_DURATION, scheduleCount * PER_ROW_SECONDS));
                     
-                    // Hapus semua style yang bisa mengganggu animasi
+                    // Reset semua style untuk memastikan animasi fresh
                     wrapper.style.transform = '';
                     wrapper.style.animation = '';
                     wrapper.style.animationDuration = baseDuration + 's';
@@ -780,9 +784,9 @@ closeDBConnection($conn);
                     void wrapper.offsetWidth; // Force reflow
                     wrapper.classList.add('animate');
                 } else {
-                    // Jika semua konten terlihat, hapus duplikasi dan hentikan animasi
+                    // Jika tidak ada schedule, hentikan animasi
                     if (isDuplicated) {
-                        // Simpan actualRows dulu sebelum menghapus
+                        // Simpan actualRows dulu sebelum menghapus duplikasi
                         const rowsToKeep = actualRows.map(row => row.cloneNode(true));
                         wrapper.innerHTML = '';
                         rowsToKeep.forEach(row => {

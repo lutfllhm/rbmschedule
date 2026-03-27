@@ -9,12 +9,13 @@
  */
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/paths.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/csrf.php';
 
 // Check request method and CSRF token
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /rbmschedule/pages/login.php?error=method');
+    header('Location: ' . getPath('pages/login.php?error=method'));
     exit();
 }
 
@@ -22,7 +23,7 @@ if (!verifyCsrfToken($_POST['csrf_token'] ?? null)) {
     if (class_exists('Logger')) {
         Logger::warning('CSRF token validation failed', ['ip' => getClientIP()]);
     }
-    header('Location: /rbmschedule/pages/login.php?error=csrf');
+    header('Location: ' . getPath('pages/login.php?error=csrf'));
     exit();
 }
 
@@ -34,7 +35,7 @@ if (empty($username) || empty($password)) {
     if (class_exists('Logger')) {
         Logger::warning('Login attempt with empty credentials', ['username' => $username]);
     }
-    header('Location: /rbmschedule/pages/login.php?error=required');
+    header('Location: ' . getPath('pages/login.php?error=required'));
     exit();
 }
 
@@ -47,7 +48,7 @@ if (!$conn) {
     if (class_exists('Logger')) {
         Logger::error('Database connection failed during login');
     }
-    header('Location: /rbmschedule/pages/login.php?error=database');
+    header('Location: ' . getPath('pages/login.php?error=database'));
     exit();
 }
 
@@ -58,7 +59,7 @@ if (!$stmt) {
         Logger::error('Failed to prepare login statement', ['error' => $conn->error]);
     }
     closeDBConnection($conn);
-    header('Location: /rbmschedule/pages/login.php?error=database');
+    header('Location: ' . getPath('pages/login.php?error=database'));
     exit();
 }
 
@@ -93,7 +94,7 @@ if ($result->num_rows === 1) {
         $stmt->close();
         closeDBConnection($conn);
         
-        header('Location: /rbmschedule/pages/dashboard.php');
+        header('Location: ' . getPath('pages/dashboard.php'));
         exit();
     } else {
         // Log failed login attempt
@@ -118,6 +119,6 @@ $stmt->close();
 closeDBConnection($conn);
 
 // Redirect with error (don't reveal if username exists)
-header('Location: /rbmschedule/pages/login.php?error=invalid');
+header('Location: ' . getPath('pages/login.php?error=invalid'));
 exit();
 ?>

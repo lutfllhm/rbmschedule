@@ -82,7 +82,11 @@ function isOperator(): bool {
  */
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        header('Location: /rbmschedule/pages/login.php');
+        // Load paths config if not already loaded
+        if (!defined('BASE_PATH')) {
+            require_once __DIR__ . '/../config/paths.php';
+        }
+        header('Location: ' . getPath('pages/login.php'));
         exit();
     }
 }
@@ -97,7 +101,11 @@ function requireLogin(): void {
 function requireAdmin(): void {
     requireLogin();
     if (!isAdmin()) {
-        header('Location: /rbmschedule/pages/dashboard.php');
+        // Load paths config if not already loaded
+        if (!defined('BASE_PATH')) {
+            require_once __DIR__ . '/../config/paths.php';
+        }
+        header('Location: ' . getPath('pages/dashboard.php'));
         exit();
     }
 }
@@ -129,7 +137,11 @@ function getCurrentUser(): ?array {
 function logout(): void {
     session_unset();
     session_destroy();
-    header('Location: /rbmschedule/pages/login.php');
+    // Load paths config if not already loaded
+    if (!defined('BASE_PATH')) {
+        require_once __DIR__ . '/../config/paths.php';
+    }
+    header('Location: ' . getPath('pages/login.php'));
     exit();
 }
 ?>

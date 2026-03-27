@@ -10,6 +10,9 @@
 // Load autoloader first
 require_once __DIR__ . '/../config/autoload.php';
 
+// Load path configuration
+require_once __DIR__ . '/../config/paths.php';
+
 // Load authentication and CSRF protection
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/csrf.php';
@@ -25,16 +28,16 @@ $csrfToken = getCsrfToken();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?>RBM Schedule</title>
-    <link rel="icon" type="image/png" href="/rbmschedule/assets/img/iw.png">
-    <link rel="stylesheet" href="/rbmschedule/assets/css/style.css">
-    <link rel="stylesheet" href="/rbmschedule/assets/css/airport-board.css">
-    <link rel="stylesheet" href="/rbmschedule/assets/css/modern-ui.css">
+    <link rel="icon" type="image/png" href="<?php echo asset('img/iw.png'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/airport-board.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/modern-ui.css'); ?>">
     <!-- Font Awesome with multiple CDN fallbacks -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <!-- Fallback Font Awesome CDN (without SRI to avoid mismatched hash blocking) -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" crossorigin="anonymous">
     <!-- Fallback CSS jika Font Awesome tidak ter-load -->
-    <link rel="stylesheet" href="/rbmschedule/assets/css/fontawesome-fallback.css">
+    <link rel="stylesheet" href="<?php echo asset('css/fontawesome-fallback.css'); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         // Check if Font Awesome loaded, if not use fallback
@@ -71,30 +74,30 @@ $csrfToken = getCsrfToken();
                     <i class="fas fa-chevron-up" id="navToggleIcon"></i>
                 </button>
                 <div class="nav-logo">
-                    <img src="/rbmschedule/assets/img/iw.png" alt="RBM Logo">
+                    <img src="<?php echo asset('img/iw.png'); ?>" alt="RBM Logo">
                 </div>
                 <span>RBM Schedule</span>
             </div>
             <div class="nav-menu">
-                <a href="/rbmschedule/pages/dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>">
+                <a href="<?php echo getPath('pages/dashboard.php'); ?>" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
                 <?php if (isAdmin()): ?>
-                <a href="/rbmschedule/pages/manage.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage.php' ? 'active' : ''; ?>">
+                <a href="<?php echo getPath('pages/manage.php'); ?>" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage.php' ? 'active' : ''; ?>">
                     <i class="fas fa-tasks"></i> Manage
                 </a>
                 <?php endif; ?>
-                <a href="/rbmschedule/pages/report.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'report.php' ? 'active' : ''; ?>">
+                <a href="<?php echo getPath('pages/report.php'); ?>" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'report.php' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-bar"></i> Report
                 </a>
-                <a href="/rbmschedule/pages/display_32.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'display_32.php' ? 'active' : ''; ?>" target="_blank" title="Display 32&quot; - Live Board">
+                <a href="<?php echo getPath('pages/display_32.php'); ?>" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'display_32.php' ? 'active' : ''; ?>" target="_blank" title="Display 32&quot; - Live Board">
                     <i class="fas fa-tv"></i> Display 32&quot;
                 </a>
                 <div class="nav-user">
                     <i class="fas fa-user-circle"></i>
                     <span><?php echo htmlspecialchars($currentUser['username']); ?></span>
                     <span class="user-role">(<?php echo ucfirst($currentUser['role']); ?>)</span>
-                    <a href="/rbmschedule/api/logout.php" class="btn-logout">
+                    <a href="<?php echo getPath('api/logout.php'); ?>" class="btn-logout">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </div>
