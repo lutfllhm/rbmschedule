@@ -347,6 +347,107 @@ closeDBConnection($conn);
             }
         }
 
+        /* Optimasi untuk layar 32 inch (1920x1080 atau lebih) */
+        @media (min-width: 1920px) {
+            .container {
+                grid-template-rows: 14vh 1fr auto auto;
+            }
+            .header {
+                padding: 1.2rem 2rem 1.2rem;
+            }
+            .brand .logo {
+                height: 70px;
+            }
+            .brand .title h1 {
+                font-size: 2.2rem;
+            }
+            .clock {
+                font-size: 1.4rem;
+            }
+            .meta-date {
+                font-size: 1rem;
+            }
+            .board {
+                padding: 1.5rem 2rem 1.5rem;
+            }
+            .row {
+                padding: 1rem 1.4rem;
+                gap: 1.4rem;
+            }
+            .label {
+                font-size: 0.8rem;
+            }
+            .value {
+                font-size: 1.3rem;
+            }
+            .value.spk {
+                font-size: 1.8rem;
+            }
+            .value.small {
+                font-size: 1.05rem;
+            }
+            .date {
+                font-size: 1rem;
+            }
+            .time {
+                font-size: 0.95rem;
+            }
+            .badge {
+                font-size: 1.05rem;
+                padding: 0.6rem 1.2rem;
+            }
+            .ticker-track {
+                padding: 0.5rem 2rem;
+                font-size: 1.1rem;
+            }
+            .footer {
+                font-size: 0.9rem;
+                padding: 0.8rem 2.5rem;
+            }
+        }
+
+        /* Optimasi untuk layar 4K (3840x2160) */
+        @media (min-width: 3840px) {
+            .brand .logo {
+                height: 100px;
+            }
+            .brand .title h1 {
+                font-size: 3rem;
+            }
+            .clock {
+                font-size: 2rem;
+            }
+            .row {
+                padding: 1.5rem 2rem;
+                gap: 2rem;
+            }
+            .label {
+                font-size: 1.1rem;
+            }
+            .value {
+                font-size: 1.8rem;
+            }
+            .value.spk {
+                font-size: 2.5rem;
+            }
+            .value.small {
+                font-size: 1.4rem;
+            }
+            .date {
+                font-size: 1.3rem;
+            }
+            .time {
+                font-size: 1.2rem;
+            }
+            .badge {
+                font-size: 1.4rem;
+                padding: 0.8rem 1.6rem;
+            }
+            .ticker-track {
+                font-size: 1.5rem;
+            }
+        }
+
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
             .value { font-size: 1.05rem; }
