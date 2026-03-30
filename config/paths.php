@@ -2,46 +2,45 @@
 /**
  * Path Configuration
  * 
- * Automatically detects the base path for the application
+ * Centralized path configuration for the application
  * 
  * @package RBM\Schedule
+ * @author RBM Development Team
+ * @version 1.0.0
  */
 
-// Detect if running in subdirectory or root
-$scriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
-$baseDir = dirname(dirname($scriptName));
+// Base URL configuration
+// For root domain deployment: define('BASE_URL', '');
+// For subdirectory deployment: define('BASE_URL', '/rbmschedule');
+define('BASE_URL', '');
 
-// If in root, baseDir will be '/' or empty
-if ($baseDir === '/' || $baseDir === '\\' || $baseDir === '.') {
-    $baseDir = '';
+// Asset paths
+define('ASSETS_URL', BASE_URL . '/assets');
+define('CSS_URL', ASSETS_URL . '/css');
+define('JS_URL', ASSETS_URL . '/js');
+define('IMG_URL', ASSETS_URL . '/img');
+
+// Page paths
+define('PAGES_URL', BASE_URL . '/pages');
+define('API_URL', BASE_URL . '/api');
+
+// Helper function to get full URL
+function url($path = '') {
+    return BASE_URL . '/' . ltrim($path, '/');
 }
 
-// Normalize path separators
-$baseDir = str_replace('\\', '/', $baseDir);
-
-// Define base path constant
-if (!defined('BASE_PATH')) {
-    define('BASE_PATH', $baseDir);
+// Helper function to get asset URL
+function asset($path = '') {
+    return ASSETS_URL . '/' . ltrim($path, '/');
 }
 
-/**
- * Get full URL path with base path
- * 
- * @param string $path Relative path
- * @return string Full path with base directory
- */
-function getPath(string $path): string {
-    $path = ltrim($path, '/');
-    return BASE_PATH . '/' . $path;
+// Helper function to get page URL
+function page($path = '') {
+    return PAGES_URL . '/' . ltrim($path, '/');
 }
 
-/**
- * Get asset URL
- * 
- * @param string $asset Asset path relative to assets directory
- * @return string Full asset URL
- */
-function asset(string $asset): string {
-    return getPath('assets/' . ltrim($asset, '/'));
+// Helper function to get API URL
+function api($path = '') {
+    return API_URL . '/' . ltrim($path, '/');
 }
 ?>

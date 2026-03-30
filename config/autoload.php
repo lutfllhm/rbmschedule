@@ -31,6 +31,11 @@ if (file_exists(HELPERS_PATH . '/functions.php')) {
     require_once HELPERS_PATH . '/functions.php';
 }
 
+// Load path configuration
+if (file_exists(ROOT_PATH . '/config/paths.php')) {
+    require_once ROOT_PATH . '/config/paths.php';
+}
+
 // Initialize logger
 if (class_exists('Logger')) {
     Logger::init();
