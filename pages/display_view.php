@@ -1,5 +1,6 @@
 <?php
 // Public Display View - untuk perangkat lain (tidak perlu login)
+require_once __DIR__ . '/../config/paths.php';
 require_once __DIR__ . '/../config/database.php';
 
 $conn = getDBConnection();
@@ -31,6 +32,10 @@ closeDBConnection($conn);
     <title>Schedule Display - RBM Production</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        // Base URL untuk JavaScript
+        const BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
     <style>
         * {
             margin: 0;
@@ -362,7 +367,7 @@ closeDBConnection($conn);
         <div class="display-view-header">
             <div class="header-left">
                 <div class="header-logo">
-                    <img src="/rbmschedule/assets/img/iw.png" alt="RBM Logo">
+                    <img src="<?php echo IMG_URL; ?>/iw.png" alt="RBM Logo">
                 </div>
                 <div class="header-title">
                     <h1>PRODUCTION SCHEDULE BOARD</h1>
@@ -518,7 +523,7 @@ closeDBConnection($conn);
             
             isSyncing = true;
             
-            fetch(`/rbmschedule/api/check_updates.php?last_check=${lastCheckTimestamp}`)
+            fetch(`${BASE_URL}/api/check_updates.php?last_check=${lastCheckTimestamp}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.has_updates) {
@@ -536,7 +541,7 @@ closeDBConnection($conn);
         
         // Refresh board with latest data
         function refreshViewBoard() {
-            fetch('/rbmschedule/api/get_schedules.php')
+            fetch(`${BASE_URL}/api/get_schedules.php`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

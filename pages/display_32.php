@@ -1,5 +1,6 @@
  <?php
 // Public Display 32" View - Tidak perlu login, realtime update, maksimal 6 schedule
+require_once __DIR__ . '/../config/paths.php';
 require_once __DIR__ . '/../config/database.php';
 
 $conn = getDBConnection();
@@ -75,6 +76,10 @@ closeDBConnection($conn);
     <title>Display 32" - RBM Production</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        // Base URL untuk JavaScript
+        const BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
     <style>
         :root {
             --bg: #0a0e27;
@@ -466,7 +471,7 @@ closeDBConnection($conn);
     <div class="container">
         <header class="header">
             <div class="brand">
-                <div class="logo"><img src="/rbmschedule/assets/img/iw.png" alt="RBM Logo"></div>
+                <div class="logo"><img src="<?php echo IMG_URL; ?>/iw.png" alt="RBM Logo"></div>
                 <div class="title">
                     <h1> RBM PRODUCTION SCHEDULE </h1>
                 </div>
@@ -730,7 +735,7 @@ closeDBConnection($conn);
 
         function checkUpdates() {
             if (syncing) return; syncing = true;
-            let url = '/rbmschedule/api/check_updates.php?last_check=' + lastCheckTimestamp;
+            let url = `${BASE_URL}/api/check_updates.php?last_check=` + lastCheckTimestamp;
             if (lastCount !== null) {
                 url += '&last_count=' + encodeURIComponent(lastCount);
             }
@@ -760,7 +765,7 @@ closeDBConnection($conn);
                 
                 while (hasMore) {
                     try {
-                        const response = await fetch(`/rbmschedule/api/get_schedules.php?status=active&per_page=1000&page=${page}`);
+                        const response = await fetch(`${BASE_URL}/api/get_schedules.php?status=active&per_page=1000&page=${page}`);
                         const data = await response.json();
                         
                         if (!data.success || !data.schedules || data.schedules.length === 0) {

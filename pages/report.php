@@ -86,11 +86,7 @@ $filtersApplied = $searchTerm !== '';
 $monthDisplay = date('F Y', strtotime($dateFrom));
 $monthDisplayId = date('F Y', mktime(0, 0, 0, $month, 1, $year));
 
-$exportUrl = '/rbmschedule/api/report_export.php';
-if (!empty($filterParams)) {
-    $exportUrl .= '?' . http_build_query($filterParams);
-}
-$exportUrl = '/rbmschedule/api/report_export.php';
+$exportUrl = getPath('api/report_export.php');
 if (!empty($filterParams)) {
     $exportUrl .= '?' . http_build_query($filterParams);
 }
@@ -115,7 +111,7 @@ closeDBConnection($conn);
     
     <div class="schedule-table-container">
         <div class="table-header">
-            <h2><img src="/rbmschedule/assets/img/rbm.png" alt="RBM Logo" class="title-logo"> Report Schedule - <?php echo $monthDisplayId; ?></h2>
+            <h2><img src="<?php echo IMG_URL; ?>/rbm.png" alt="RBM Logo" class="title-logo"> Report Schedule - <?php echo $monthDisplayId; ?></h2>
             <div class="table-actions">
                 <form class="filter-form" method="GET" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                     <label style="color: var(--airport-text-dim); font-weight: 600;">Pilih Bulan:</label>
@@ -125,7 +121,7 @@ closeDBConnection($conn);
                         <i class="fas fa-filter"></i> Terapkan
                     </button>
                     <?php if ($filtersApplied): ?>
-                    <a href="/rbmschedule/pages/report.php" class="btn btn-link btn-sm">Reset</a>
+                    <a href="<?php echo getPath('pages/report.php'); ?>" class="btn btn-link btn-sm">Reset</a>
                     <?php endif; ?>
                     <a href="<?php echo htmlspecialchars($exportUrl); ?>" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
                         <i class="fas fa-file-export"></i> Export CSV
@@ -253,7 +249,7 @@ closeDBConnection($conn);
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
-            <form id="deleteForm" method="POST" action="/rbmschedule/api/schedule_delete.php" style="display: inline;">
+            <form id="deleteForm" method="POST" action="<?php echo getPath('api/schedule_delete.php'); ?>" style="display: inline;">
                 <input type="hidden" name="schedule_id" id="delete_schedule_id">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                 <button type="submit" class="btn btn-danger">

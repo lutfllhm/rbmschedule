@@ -1,5 +1,6 @@
 <?php
 // Display mode - bisa diupdate oleh operator dan admin
+require_once __DIR__ . '/../config/paths.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../config/database.php';
 
@@ -31,10 +32,14 @@ closeDBConnection($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List Schedule Update - RBM</title>
-    <link rel="stylesheet" href="/rbmschedule/assets/css/style.css">
-    <link rel="stylesheet" href="/rbmschedule/assets/css/airport-board.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>/style.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>/airport-board.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        // Base URL untuk JavaScript
+        const BASE_URL = '<?php echo BASE_URL; ?>';
+    </script>
     <style>
         * {
             margin: 0;
@@ -700,7 +705,7 @@ closeDBConnection($conn);
             <div class="header-content">
                 <div class="header-title">
                     <div class="header-logo">
-                        <img src="/rbmschedule/assets/img/iw.png" alt="RBM Logo">
+                        <img src="<?php echo IMG_URL; ?>/iw.png" alt="RBM Logo">
                     </div>
                     <div>
                         <h1>FLIGHT SCHEDULE BOARD</h1>
@@ -883,7 +888,7 @@ closeDBConnection($conn);
     </div>
     <?php endif; ?>
     
-    <script src="/rbmschedule/assets/js/script.js"></script>
+    <script src="<?php echo JS_URL; ?>/script.js"></script>
     <script>
         // Clock and Date
         function updateClock() {
@@ -947,7 +952,7 @@ closeDBConnection($conn);
             
             isSyncing = true;
             
-            fetch(`/rbmschedule/api/check_updates.php?last_check=${lastCheckTimestamp}`)
+            fetch(`${BASE_URL}/api/check_updates.php?last_check=${lastCheckTimestamp}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -973,7 +978,7 @@ closeDBConnection($conn);
         
         function refreshDisplay() {
             console.log('🔄 Refreshing display data...');
-            fetch('/rbmschedule/api/get_schedules.php')
+            fetch(`${BASE_URL}/api/get_schedules.php`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1565,7 +1570,7 @@ closeDBConnection($conn);
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
             
-            fetch('/rbmschedule/api/schedule_ajax.php', {
+            fetch(`${BASE_URL}/api/schedule_ajax.php`, {
                 method: 'POST',
                 body: formData
             })

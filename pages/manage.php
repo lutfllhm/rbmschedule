@@ -70,7 +70,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
     
     <div class="schedule-table-container">
         <div class="table-header">
-            <h2><img src="/rbmschedule/assets/img/rbm.png" alt="RBM Logo" class="title-logo"> List Schedule Update</h2>
+            <h2><img src="<?php echo IMG_URL; ?>/rbm.png" alt="RBM Logo" class="title-logo"> List Schedule Update</h2>
             <div class="table-actions">
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search SPK, Item, Customer...">
             </div>

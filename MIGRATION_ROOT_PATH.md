@@ -235,6 +235,18 @@ Jika ada masalah setelah migrasi:
 - [x] Autoload updated
 - [x] Nginx config updated
 - [x] index.php updated
-- [ ] Pages updated (manual)
-- [ ] API updated (manual)
-- [ ] JavaScript updated (manual)
+- [x] Pages updated (dashboard, manage, report, display, display_32, display_view)
+- [x] API updated (schedule_create, schedule_update, schedule_delete)
+- [x] JavaScript updated (BASE_URL variable added)
+- [x] Header/Footer updated
+- [x] All hardcoded /rbmschedule paths replaced with dynamic helpers
+
+## Update Terakhir
+
+Semua file sudah diupdate untuk menggunakan root domain. Perubahan yang dilakukan:
+
+1. **config/paths.php**: BASE_URL diubah dari `/rbmschedule` ke `''` (root domain)
+2. **Semua file pages/**: Menggunakan helper functions (IMG_URL, CSS_URL, JS_URL, getPath)
+3. **Semua file api/**: Redirect menggunakan getPath() helper
+4. **JavaScript files**: Menambahkan BASE_URL variable untuk fetch API
+5. **Display files**: Menambahkan require paths.php dan BASE_URL JavaScript variable

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /rbmschedule/pages/dashboard.php');
+    header('Location: ' . getPath('pages/dashboard.php'));
     exit();
 }
 
@@ -13,7 +13,7 @@ $action = isset($_POST['action']) ? $_POST['action'] : '';
 $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
 
 if ($schedule_id <= 0) {
-    header('Location: /rbmschedule/pages/dashboard.php?error=invalid');
+    header('Location: ' . getPath('pages/dashboard.php?error=invalid'));
     exit();
 }
 
@@ -35,7 +35,7 @@ if ($action === 'operator_update' && isOperator()) {
     
     if (!$current) {
         closeDBConnection($conn);
-        header('Location: /rbmschedule/pages/dashboard.php?error=notfound');
+        header('Location: ' . getPath('pages/dashboard.php?error=notfound'));
         exit();
     }
     
@@ -102,23 +102,23 @@ if ($action === 'operator_update' && isOperator()) {
     if ($stmt->execute()) {
         $stmt->close();
         closeDBConnection($conn);
-        header('Location: /rbmschedule/pages/dashboard.php?success=updated');
+        header('Location: ' . getPath('pages/dashboard.php?success=updated'));
         exit();
     }
     
     $stmt->close();
     closeDBConnection($conn);
-    header('Location: /rbmschedule/pages/dashboard.php?error=failed');
+    header('Location: ' . getPath('pages/dashboard.php?error=failed'));
     exit();
 }
 
 // Admin update (handled by schedule_create.php)
 if (isAdmin()) {
-    header('Location: /rbmschedule/api/schedule_create.php');
+    header('Location: ' . getPath('api/schedule_create.php'));
     exit();
 }
 
 closeDBConnection($conn);
-header('Location: /rbmschedule/pages/dashboard.php?error=unauthorized');
+header('Location: ' . getPath('pages/dashboard.php?error=unauthorized'));
 exit();
 ?>

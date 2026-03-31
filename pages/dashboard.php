@@ -135,7 +135,7 @@ closeDBConnection($conn);
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-left">
-            <h1><img src="/rbmschedule/assets/img/rbm.png" alt="RBM Logo" class="title-logo"> Dashboard Schedule</h1>
+            <h1><img src="<?php echo IMG_URL; ?>/rbm.png" alt="RBM Logo" class="title-logo"> Dashboard Schedule</h1>
         </div>
         <div class="header-right">
             <div class="digital-clock-wrapper">
@@ -198,7 +198,7 @@ closeDBConnection($conn);
     
     <div class="schedule-table-container">
         <div class="table-header">
-            <h2><img src="/rbmschedule/assets/img/rbm.png" alt="RBM Logo" class="title-logo"> List Schedule Update</h2>
+            <h2><img src="<?php echo IMG_URL; ?>/rbm.png" alt="RBM Logo" class="title-logo"> List Schedule Update</h2>
             <div class="table-actions">
                 <form class="filter-form" method="GET">
                     <input type="hidden" name="page" value="1">
@@ -221,7 +221,7 @@ closeDBConnection($conn);
                         <i class="fas fa-filter"></i> Terapkan
                     </button>
                     <?php if ($filtersApplied): ?>
-                    <a href="/rbmschedule/pages/dashboard.php" class="btn btn-link btn-sm">Reset</a>
+                    <a href="<?php echo getPath('pages/dashboard.php'); ?>" class="btn btn-link btn-sm">Reset</a>
                     <?php endif; ?>
                 </form>
             </div>

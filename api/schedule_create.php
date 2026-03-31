@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/auth.php';
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /rbmschedule/pages/manage.php');
+    header('Location: ' . getPath('pages/manage.php'));
     exit();
 }
 
@@ -22,7 +22,7 @@ $status = isset($_POST['status']) ? $_POST['status'] : 'Not Started';
 $catatan = isset($_POST['catatan']) ? trim($_POST['catatan']) : null;
 
 if (empty($spk) || empty($nama_barang) || $qty_order <= 0 || empty($customer)) {
-    header('Location: /rbmschedule/pages/manage.php?error=required');
+    header('Location: ' . getPath('pages/manage.php?error=required'));
     exit();
 }
 
@@ -36,7 +36,7 @@ if ($schedule_id > 0) {
     if ($stmt->execute()) {
         $stmt->close();
         closeDBConnection($conn);
-        header('Location: /rbmschedule/pages/manage.php?success=updated');
+        header('Location: ' . getPath('pages/manage.php?success=updated'));
         exit();
     }
 } else {
@@ -47,13 +47,13 @@ if ($schedule_id > 0) {
     if ($stmt->execute()) {
         $stmt->close();
         closeDBConnection($conn);
-        header('Location: /rbmschedule/pages/manage.php?success=created');
+        header('Location: ' . getPath('pages/manage.php?success=created'));
         exit();
     }
 }
 
 $stmt->close();
 closeDBConnection($conn);
-header('Location: /rbmschedule/pages/manage.php?error=failed');
+header('Location: ' . getPath('pages/manage.php?error=failed'));
 exit();
 ?>

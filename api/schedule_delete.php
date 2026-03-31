@@ -5,14 +5,14 @@ require_once __DIR__ . '/../includes/auth.php';
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /rbmschedule/pages/manage.php');
+    header('Location: ' . getPath('pages/manage.php'));
     exit();
 }
 
 $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
 
 if ($schedule_id <= 0) {
-    header('Location: /rbmschedule/pages/manage.php?error=invalid');
+    header('Location: ' . getPath('pages/manage.php?error=invalid'));
     exit();
 }
 
@@ -24,12 +24,12 @@ $stmt->bind_param("i", $schedule_id);
 if ($stmt->execute()) {
     $stmt->close();
     closeDBConnection($conn);
-    header('Location: /rbmschedule/pages/manage.php?success=deleted');
+    header('Location: ' . getPath('pages/manage.php?success=deleted'));
     exit();
 }
 
 $stmt->close();
 closeDBConnection($conn);
-header('Location: /rbmschedule/pages/manage.php?error=failed');
+header('Location: ' . getPath('pages/manage.php?error=failed'));
 exit();
 ?>
