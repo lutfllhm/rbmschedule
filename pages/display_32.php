@@ -352,62 +352,73 @@ closeDBConnection($conn);
             }
         }
 
-        /* Optimasi untuk layar 32 inch (1920x1080 atau lebih) */
+        /* Optimasi untuk TV 32 inch (1920x1080 - resolusi standar TV 32") */
         @media (min-width: 1920px) {
             .container {
-                grid-template-rows: 14vh 1fr auto auto;
+                grid-template-rows: 15vh 1fr auto auto;
             }
             .header {
-                padding: 1.2rem 2rem 1.2rem;
+                padding: 1.5rem 2.5rem 1.5rem;
             }
             .brand .logo {
-                height: 70px;
+                height: 80px;
             }
             .brand .title h1 {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
+                letter-spacing: 3px;
             }
             .clock {
-                font-size: 1.4rem;
+                font-size: 1.6rem;
             }
             .meta-date {
-                font-size: 1rem;
-            }
-            .board {
-                padding: 1.5rem 2rem 1.5rem;
-            }
-            .row {
-                padding: 1rem 1.4rem;
-                gap: 1.4rem;
-            }
-            .label {
-                font-size: 0.8rem;
-            }
-            .value {
-                font-size: 1.3rem;
-            }
-            .value.spk {
-                font-size: 1.8rem;
-            }
-            .value.small {
-                font-size: 1.05rem;
-            }
-            .date {
-                font-size: 1rem;
-            }
-            .time {
-                font-size: 0.95rem;
-            }
-            .badge {
-                font-size: 1.05rem;
-                padding: 0.6rem 1.2rem;
-            }
-            .ticker-track {
-                padding: 0.5rem 2rem;
                 font-size: 1.1rem;
             }
-            .footer {
+            .board {
+                padding: 2rem 2.5rem 2rem;
+            }
+            .row {
+                padding: 1.2rem 1.6rem;
+                gap: 1.6rem;
+                margin-bottom: 1rem;
+            }
+            .label {
                 font-size: 0.9rem;
-                padding: 0.8rem 2.5rem;
+                letter-spacing: 1.2px;
+            }
+            .value {
+                font-size: 1.5rem;
+            }
+            .value.spk {
+                font-size: 2.2rem;
+            }
+            .value.small {
+                font-size: 1.15rem;
+            }
+            .date {
+                font-size: 1.1rem;
+            }
+            .time {
+                font-size: 1rem;
+            }
+            .badge {
+                font-size: 1.15rem;
+                padding: 0.7rem 1.4rem;
+            }
+            .ticker-track {
+                padding: 0.6rem 2rem;
+                font-size: 1.2rem;
+            }
+            .footer {
+                font-size: 1rem;
+                padding: 1rem 2.5rem;
+            }
+            /* Perbesar icon untuk TV 32" */
+            .value.small i {
+                width: 20px;
+                font-size: 1.1rem;
+            }
+            .badge i {
+                font-size: 1.2rem;
             }
         }
 
