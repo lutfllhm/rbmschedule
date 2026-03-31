@@ -43,4 +43,9 @@ function page($path = '') {
 function api($path = '') {
     return API_URL . '/' . ltrim($path, '/');
 }
+
+// Helper function to get path (alias for url)
+function getPath($path = '') {
+    return BASE_URL . '/' . ltrim($path, '/');
+}
 ?>

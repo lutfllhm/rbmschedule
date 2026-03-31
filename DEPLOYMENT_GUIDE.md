@@ -157,6 +157,31 @@ docker-compose ps
 
 # Lihat log jika ada masalah
 docker-compose logs -f
+
+# Jika ada error "port already allocated", cek port yang digunakan
+netstat -tulpn | grep 8083
+netstat -tulpn | grep 3307
+
+# Jika port bentrok, stop aplikasi lain atau ubah port di docker-compose.yml
+```
+
+## Langkah 8.1: Verifikasi Database
+
+```bash
+# Masuk ke container MySQL
+docker exec -it rbmschedule-mysql mysql -u rbm_user -prbm_secure_password_2024 rbm_schedule
+
+# Di dalam MySQL, cek tabel
+SHOW TABLES;
+
+# Jika tabel kosong, import manual
+exit
+
+# Import database manual
+docker exec -i rbmschedule-mysql mysql -u rbm_user -prbm_secure_password_2024 rbm_schedule < database.sql
+
+# Verifikasi lagi
+docker exec -it rbmschedule-mysql mysql -u rbm_user -prbm_secure_password_2024 rbm_schedule -e "SHOW TABLES;"
 ```
 
 ## Langkah 9: Setup SSL dengan Certbot (Opsional tapi Direkomendasikan)
