@@ -44,8 +44,6 @@ services:
       MYSQL_DATABASE: ${DB_NAME:-rbm_schedule}
       MYSQL_USER: ${DB_USER:-rbm_user}
       MYSQL_PASSWORD: ${DB_PASS:-rbm_password}
-    ports:
-      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
