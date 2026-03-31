@@ -46,14 +46,14 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                     <label for="username">
                         <i class="fas fa-user"></i> Username
                     </label>
-                    <input type="text" id="username" name="username" class="form-control" required autofocus>
+                    <input type="text" id="username" name="username" class="form-control" autocomplete="username" required autofocus>
                 </div>
                 
                 <div class="form-group">
                     <label for="password">
                         <i class="fas fa-lock"></i> Password
                     </label>
-                    <input type="password" id="password" name="password" class="form-control" required>
+                    <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
                 </div>
 
                 <div class="login-remember-row">
