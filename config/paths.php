@@ -12,7 +12,7 @@
 // Base URL configuration
 // For root domain deployment: define('BASE_URL', '');
 // For subdirectory deployment: define('BASE_URL', '/rbmschedule');
-define('BASE_URL', '/rbmschedule');
+define('BASE_URL', '');
 
 // Asset paths
 define('ASSETS_URL', BASE_URL . '/assets');
