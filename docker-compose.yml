@@ -15,7 +15,9 @@ services:
     restart: unless-stopped
 
   app:
-    image: php:8.2-fpm-alpine
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
     container_name: rbmschedule-app
     depends_on:
       - mysql
@@ -31,7 +33,6 @@ services:
       - ./:/var/www/html/rbmschedule
     networks:
       - rbmschedule-network
-    command: sh -c "docker-php-ext-install mysqli pdo pdo_mysql && php-fpm"
     restart: unless-stopped
 
   mysql:
@@ -55,6 +56,11 @@ services:
 networks:
   rbmschedule-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-rbmschedule
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
 
 volumes:
   mysql_data:
