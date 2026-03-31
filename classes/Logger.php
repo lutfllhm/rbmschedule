@@ -18,7 +18,7 @@ class Logger {
      */
     public static function init() {
         if (!is_dir(self::$logDir)) {
-            mkdir(self::$logDir, 0755, true);
+            @mkdir(self::$logDir, 0755, true);
         }
     }
     
@@ -110,7 +110,7 @@ class Logger {
      */
     private static function writeToFile(string $filename, string $message): void {
         $filepath = self::$logDir . '/' . $filename;
-        file_put_contents($filepath, $message, FILE_APPEND | LOCK_EX);
+        @file_put_contents($filepath, $message, FILE_APPEND | LOCK_EX);
     }
     
     /**
