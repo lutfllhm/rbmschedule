@@ -9,10 +9,43 @@
  * @version 1.0.0
  */
 
-// Base URL configuration
-// For root domain deployment: define('BASE_URL', '');
-// For subdirectory deployment: define('BASE_URL', '/rbmschedule');
-define('BASE_URL', '');
+// Base URL configuration (auto-detect with optional override)
+// Optional override via environment variable APP_BASE_URL.
+if (!function_exists('normalizeBaseUrl')) {
+    function normalizeBaseUrl($baseUrl) {
+        $baseUrl = trim((string) $baseUrl);
+        if ($baseUrl === '' || $baseUrl === '/') {
+            return '';
+        }
+        $baseUrl = '/' . trim($baseUrl, '/');
+        return $baseUrl;
+    }
+}
+
+if (!function_exists('detectBaseUrlFromScript')) {
+    function detectBaseUrlFromScript() {
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        if ($scriptName === '') {
+            return '';
+        }
+
+        $scriptName = str_replace('\\', '/', $scriptName);
+        if (preg_match('#^(.*)/(pages|api|assets|includes)(/|$)#', $scriptName, $matches)) {
+            return normalizeBaseUrl($matches[1]);
+        }
+
+        // Fallback for index.php in app root.
+        $directory = dirname($scriptName);
+        if ($directory === '/' || $directory === '\\' || $directory === '.') {
+            return '';
+        }
+
+        return normalizeBaseUrl($directory);
+    }
+}
+
+$baseUrlOverride = getenv('APP_BASE_URL');
+define('BASE_URL', $baseUrlOverride !== false ? normalizeBaseUrl($baseUrlOverride) : detectBaseUrlFromScript());
 
 // Asset paths
 define('ASSETS_URL', BASE_URL . '/assets');
