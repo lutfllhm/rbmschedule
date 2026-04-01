@@ -31,6 +31,12 @@ function appendCsrfToken(formData) {
     }
 }
 
+function buildApiUrl(path) {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const baseUrl = typeof window.appBaseUrl === 'string' ? window.appBaseUrl : '';
+    return `${baseUrl}${normalizedPath}`;
+}
+
 function buildScheduleQueryParams(includeFinish = false) {
     const params = new URLSearchParams();
     const urlParams = new URLSearchParams(window.location.search);
@@ -327,7 +333,7 @@ function handleScheduleFormSubmit(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     
-    fetch('/rbmschedule/api/schedule_ajax.php', {
+    fetch(buildApiUrl('/api/schedule_ajax.php'), {
         method: 'POST',
         body: formData
     })
@@ -386,7 +392,7 @@ function handleDeleteFormSubmit(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghapus...';
     
-    fetch('/rbmschedule/api/schedule_ajax.php', {
+    fetch(buildApiUrl('/api/schedule_ajax.php'), {
         method: 'POST',
         body: formData
     })
@@ -902,7 +908,7 @@ function handleOperatorFormSubmit(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     
-    fetch('/rbmschedule/api/schedule_ajax.php', {
+    fetch(buildApiUrl('/api/schedule_ajax.php'), {
         method: 'POST',
         body: formData
     })
@@ -1036,7 +1042,7 @@ function createDashboardScheduleRow(schedule) {
 
 // Update dashboard statistics
 function updateDashboardStats() {
-    fetch('/rbmschedule/api/get_stats.php')
+    fetch(buildApiUrl('/api/get_stats.php'))
     .then(response => response.json())
     .then(data => {
         if (data.success) {
@@ -1069,7 +1075,7 @@ function markScheduleFinish(scheduleId) {
     formData.append('schedule_id', scheduleId);
     appendCsrfToken(formData);
     
-    fetch('/rbmschedule/api/schedule_ajax.php', {
+    fetch(buildApiUrl('/api/schedule_ajax.php'), {
         method: 'POST',
         body: formData
     })
@@ -1183,7 +1189,7 @@ function startEventStream() {
     stopEventStream();
     stopRealtimeSync();
 
-        eventSource = new EventSource('/rbmschedule/api/updates_stream.php');
+        eventSource = new EventSource(buildApiUrl('/api/updates_stream.php'));
     console.log('📡 SSE stream connected');
 
     eventSource.addEventListener('schedule-update', (event) => {
@@ -1274,7 +1280,7 @@ function checkForUpdates() {
     console.log(`🔍 Checking for updates... (last_check: ${lastCheckTimestamp}, last_count: ${lastScheduleCount})`);
     
     // Build URL with last_check and last_count parameters
-    let url = `/rbmschedule/api/check_updates.php?last_check=${lastCheckTimestamp}`;
+    let url = buildApiUrl(`/api/check_updates.php?last_check=${lastCheckTimestamp}`);
     if (lastScheduleCount !== null) {
         url += `&last_count=${lastScheduleCount}`;
     }
@@ -1314,8 +1320,8 @@ function refreshScheduleTable() {
     const isReportPage = window.location.pathname.includes('report.php');
     const queryString = buildScheduleQueryParams(isReportPage);
     const url = queryString
-        ? `/rbmschedule/api/get_schedules.php?${queryString}`
-        : '/rbmschedule/api/get_schedules.php';
+        ? buildApiUrl(`/api/get_schedules.php?${queryString}`)
+        : buildApiUrl('/api/get_schedules.php');
     
     fetch(url)
     .then(response => response.json())
@@ -1683,8 +1689,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const isReportPage = window.location.pathname.includes('report.php');
         const initialParams = buildScheduleQueryParams(isReportPage);
         const initialUrl = initialParams
-            ? `/rbmschedule/api/get_schedules.php?${initialParams}`
-            : '/rbmschedule/api/get_schedules.php';
+            ? buildApiUrl(`/api/get_schedules.php?${initialParams}`)
+            : buildApiUrl('/api/get_schedules.php');
         
         fetch(initialUrl)
         .then(response => response.json())
