@@ -1,4 +1,4 @@
- <?php
+<?php
 // Public Display 32" View - Tidak perlu login, realtime update, maksimal 6 schedule
 require_once __DIR__ . '/../config/paths.php';
 require_once __DIR__ . '/../config/database.php';
@@ -93,6 +93,7 @@ closeDBConnection($conn);
             --finish: #3b82f6;
             --border: #1a3a5c;
             --glow: rgba(0, 212, 255, 0.6);
+            --tv-scale: 1;
         }
         * { box-sizing: border-box; }
         html, body { height: 100%; }
@@ -102,11 +103,15 @@ closeDBConnection($conn);
             color: var(--text);
             font-family: Arial, Helvetica, sans-serif;
             overflow: hidden; /* display dinding - tanpa scroll */
+            zoom: var(--tv-scale);
         }
         .container {
-            height: 100vh;
+            width: 100%;
+            max-width: 1920px;
+            margin: 0 auto;
+            height: 100dvh;
             display: grid;
-            grid-template-rows: 17vh 1fr auto auto; /* header, konten, ticker, footer */
+            grid-template-rows: minmax(6.5rem, 15vh) 1fr auto auto; /* header, konten, ticker, footer */
         }
         /* Header */
         .header {
@@ -114,14 +119,14 @@ closeDBConnection($conn);
             display: flex;
             align-items: flex-start;
             justify-content: flex-start;
-            padding: 1.5rem 2.5rem 1.6rem;
+            padding: clamp(0.9rem, 1.5vh, 1.5rem) clamp(1rem, 2.2vw, 2.5rem) clamp(1rem, 1.6vh, 1.6rem);
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.10), rgba(0, 212, 255, 0.05));
             border-bottom: 3px solid var(--accent);
             box-shadow: 0 6px 24px rgba(0, 212, 255, 0.25);
         }
         .brand { display: flex; align-items: center; gap: 1rem; }
         .brand .logo { 
-            height: 60px;
+            height: clamp(2.8rem, 4.2vh, 4.6rem);
             width: auto;
         }
         
@@ -146,7 +151,7 @@ closeDBConnection($conn);
             display: flex; flex-direction: column; gap: 0.2rem;
         }
         .brand .title h1 {
-            margin: 0; font-size: 2rem; font-weight: 900; letter-spacing: 2px; color: var(--accent);
+            margin: 0; font-size: clamp(1.15rem, 2vw, 2rem); font-weight: 900; letter-spacing: clamp(0.05rem, 0.15vw, 0.125rem); color: var(--accent);
             text-shadow: 0 0 18px rgba(0, 212, 255, 0.55);
         }
         .ticker {
@@ -161,10 +166,10 @@ closeDBConnection($conn);
         .footer {
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.10), rgba(0, 212, 255, 0.05));
             border-top: 2px solid rgba(0, 212, 255, 0.35);
-            padding: 0.75rem 2.5rem;
+            padding: clamp(0.5rem, 1vh, 0.75rem) clamp(1rem, 2.2vw, 2.5rem);
             text-align: center;
             color: var(--text-dim);
-            font-size: 0.85rem;
+            font-size: clamp(0.72rem, 1vw, 0.9rem);
             box-shadow: 0 -4px 16px rgba(0, 212, 255, 0.15);
         }
         .footer p {
@@ -173,12 +178,13 @@ closeDBConnection($conn);
         }
         .ticker-track {
             display: flex;
-            gap: 2rem;
+            gap: clamp(0.8rem, 2vw, 2rem);
             white-space: nowrap;
-            padding: 0.4rem 2rem;
+            padding: clamp(0.3rem, 0.7vh, 0.45rem) clamp(0.7rem, 2vw, 2rem);
             font-weight: 700;
             letter-spacing: 0.08em;
             color: var(--text);
+            font-size: clamp(0.8rem, 1.3vw, 1.1rem);
             text-transform: uppercase;
             will-change: transform;
         }
@@ -193,40 +199,57 @@ closeDBConnection($conn);
         }
         .meta { 
             position: absolute;
-            top: 1.1rem;
-            right: 2.5rem;
+            top: clamp(0.6rem, 1.2vh, 1.1rem);
+            right: clamp(1rem, 2.2vw, 2.5rem);
             display: flex; 
             flex-direction: column;
             align-items: flex-end; 
-            gap: 0.5rem; 
-            padding-bottom: 0.8rem;
+            gap: clamp(0.2rem, 0.6vh, 0.5rem); 
+            padding-bottom: clamp(0.2rem, 1vh, 0.8rem);
         }
         .clock { 
-            font-size: 1.2rem; 
+            font-size: clamp(0.95rem, 1.6vw, 1.4rem); 
             font-weight: 800; 
             color: var(--text); 
             text-shadow: 0 0 16px rgba(0,212,255,0.45); 
-            letter-spacing: 2px;
+            letter-spacing: clamp(0.03rem, 0.12vw, 0.12rem);
         }
         .meta-date {
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 1vw, 0.95rem);
             color: var(--text-dim);
             text-align: right;
             letter-spacing: 0.07em;
-            margin-bottom: 0.6rem;
+            margin-bottom: clamp(0.25rem, 0.8vh, 0.6rem);
         }
         .live {
-            display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem;
+            display: inline-flex; align-items: center; gap: clamp(0.3rem, 0.6vw, 0.6rem); padding: clamp(0.35rem, 0.7vh, 0.5rem) clamp(0.6rem, 1vw, 1rem);
             border: 2px solid var(--accent); border-radius: 999px; background: rgba(0, 212, 255, 0.08);
         }
-        .live .dot { width: 12px; height: 12px; border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; }
-        .live .txt { font-weight: 700; color: var(--accent); }
+        .live .dot { width: clamp(0.45rem, 0.75vw, 0.75rem); height: clamp(0.45rem, 0.75vw, 0.75rem); border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; }
+        .live .txt { font-weight: 700; color: var(--accent); font-size: clamp(0.68rem, 0.85vw, 0.85rem); }
+        .view-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-tv {
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            font-size: clamp(0.65rem, 0.75vw, 0.8rem);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
         @keyframes blink { 0%,100% {opacity:1} 50% {opacity:.4} }
 
         /* Board */
         .board {
             height: 100%;
-            padding: 1.8rem 1.6rem 1.6rem;
+            padding: clamp(0.8rem, 1.8vh, 1.8rem) clamp(0.8rem, 1.7vw, 1.6rem) clamp(0.8rem, 1.6vh, 1.6rem);
             display: flex; flex-direction: column; gap: 1rem;
             overflow: hidden; /* penting: tidak scroll */
         }
@@ -235,7 +258,7 @@ closeDBConnection($conn);
             flex: 1; 
             overflow: hidden; 
             position: relative;
-            padding-top: 1.5rem; /* Spacing yang cukup dari header */
+            padding-top: clamp(0.6rem, 1.5vh, 1.5rem); /* Spacing yang cukup dari header */
             mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         }
@@ -247,7 +270,7 @@ closeDBConnection($conn);
         .rows-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 0.9rem;
+            gap: clamp(0.5rem, 1vh, 0.9rem);
             will-change: transform;
             transition: opacity 0.3s ease;
         }
@@ -273,16 +296,16 @@ closeDBConnection($conn);
         .row {
             display: grid; grid-template-columns: 1.1fr 2fr 0.9fr 1.3fr 1.3fr 1.2fr; gap: 1.2rem; align-items: center;
             background: linear-gradient(135deg, rgba(20,27,61,0.92), rgba(26,35,81,0.90));
-            border: 2px solid var(--border); border-radius: 12px; padding: 0.9rem 1.2rem;
+            border: 0.12rem solid var(--border); border-radius: 0.75rem; padding: clamp(0.6rem, 1.2vh, 0.9rem) clamp(0.65rem, 1.25vw, 1.2rem);
             transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
         }
         .row:hover { border-color: var(--accent); box-shadow: 0 0 26px rgba(0, 212, 255, 0.28); transform: translateY(-2px); }
         .cell { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
-        .label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-        .value { font-size: 1.15rem; color: var(--text); font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; }
-        .value.spk { font-size: 1.6rem; color: var(--accent); text-shadow: 0 0 12px var(--glow); }
+        .label { font-size: clamp(0.6rem, 0.8vw, 0.8rem); color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+        .value { font-size: clamp(0.86rem, 1.25vw, 1.25rem); color: var(--text); font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; }
+        .value.spk { font-size: clamp(1rem, 1.9vw, 1.9rem); color: var(--accent); text-shadow: 0 0 12px var(--glow); }
         .value.small { 
-            font-size: 0.95rem; 
+            font-size: clamp(0.76rem, 1vw, 1rem); 
             color: var(--text-dim); 
             font-weight: 600; 
             display: flex; 
@@ -291,7 +314,7 @@ closeDBConnection($conn);
         }
         .value.small i { 
             display: inline-block; 
-            width: 16px; 
+            width: clamp(0.8rem, 1vw, 1rem); 
             text-align: center; 
             color: var(--accent); 
             flex-shrink: 0;
@@ -312,7 +335,7 @@ closeDBConnection($conn);
         }
         .value.note i { 
             display: inline-block; 
-            width: 16px; 
+            width: clamp(0.8rem, 1vw, 1rem); 
             text-align: center; 
             color: #fcd34d; 
             flex-shrink: 0;
@@ -322,10 +345,10 @@ closeDBConnection($conn);
             margin-right: 0.25rem;
             vertical-align: middle;
         }
-        .date { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--text); margin-top: 0.25rem; }
-        .time { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--accent); margin-top: 0.15rem; }
+        .date { font-family: 'Orbitron', monospace; font-size: clamp(0.7rem, 0.95vw, 0.95rem); color: var(--text); margin-top: 0.25rem; }
+        .time { font-family: 'Orbitron', monospace; font-size: clamp(0.68rem, 0.9vw, 0.9rem); color: var(--accent); margin-top: 0.15rem; }
 
-        .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: 2px solid; border-radius: 999px; font-weight: 900; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 1px; }
+        .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: clamp(0.3rem, 0.7vh, 0.5rem) clamp(0.55rem, 1vw, 1rem); border: 0.12rem solid; border-radius: 999px; font-weight: 900; text-transform: uppercase; font-size: clamp(0.7rem, 1vw, 1rem); letter-spacing: 0.08em; }
         .badge.pending,
         .badge.not-started { color: var(--pending); border-color: var(--pending); background: rgba(245, 158, 11, 0.12); }
         .badge.processing { color: var(--running); border-color: var(--running); background: rgba(16, 185, 129, 0.12); }
@@ -352,129 +375,62 @@ closeDBConnection($conn);
             }
         }
 
-        /* Optimasi untuk TV 32 inch (1920x1080 - resolusi standar TV 32") */
-        @media (min-width: 1920px) {
+        @media screen and (min-width: 1366px) {
             .container {
-                grid-template-rows: 15vh 1fr auto auto;
-            }
-            .header {
-                padding: 1.5rem 2.5rem 1.5rem;
-            }
-            .brand .logo {
-                height: 80px;
-            }
-            .brand .title h1 {
-                font-size: 2.5rem;
-                letter-spacing: 3px;
-            }
-            .clock {
-                font-size: 1.6rem;
-            }
-            .meta-date {
-                font-size: 1.1rem;
-            }
-            .board {
-                padding: 2rem 2.5rem 2rem;
+                max-width: min(96vw, 1920px);
+                grid-template-rows: minmax(6rem, 14vh) 1fr auto auto;
             }
             .row {
-                padding: 1.2rem 1.6rem;
-                gap: 1.6rem;
-                margin-bottom: 1rem;
-            }
-            .label {
-                font-size: 0.9rem;
-                letter-spacing: 1.2px;
-            }
-            .value {
-                font-size: 1.5rem;
-            }
-            .value.spk {
-                font-size: 2.2rem;
-            }
-            .value.small {
-                font-size: 1.15rem;
-            }
-            .date {
-                font-size: 1.1rem;
-            }
-            .time {
-                font-size: 1rem;
-            }
-            .badge {
-                font-size: 1.15rem;
-                padding: 0.7rem 1.4rem;
-            }
-            .ticker-track {
-                padding: 0.6rem 2rem;
-                font-size: 1.2rem;
-            }
-            .footer {
-                font-size: 1rem;
-                padding: 1rem 2.5rem;
-            }
-            /* Perbesar icon untuk TV 32" */
-            .value.small i {
-                width: 20px;
-                font-size: 1.1rem;
-            }
-            .badge i {
-                font-size: 1.2rem;
+                gap: clamp(0.8rem, 1.1vw, 1.2rem);
             }
         }
 
         /* Optimasi untuk layar 4K (3840x2160) */
         @media (min-width: 3840px) {
-            .brand .logo {
-                height: 100px;
-            }
-            .brand .title h1 {
-                font-size: 3rem;
-            }
-            .clock {
-                font-size: 2rem;
-            }
-            .row {
-                padding: 1.5rem 2rem;
-                gap: 2rem;
-            }
-            .label {
-                font-size: 1.1rem;
-            }
-            .value {
-                font-size: 1.8rem;
-            }
-            .value.spk {
-                font-size: 2.5rem;
-            }
-            .value.small {
-                font-size: 1.4rem;
-            }
-            .date {
-                font-size: 1.3rem;
-            }
-            .time {
-                font-size: 1.2rem;
-            }
-            .badge {
-                font-size: 1.4rem;
-                padding: 0.8rem 1.6rem;
-            }
-            .ticker-track {
-                font-size: 1.5rem;
-            }
+            :root { --tv-scale: 0.9; }
         }
 
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
-            .value { font-size: 1.05rem; }
-            .value.spk { font-size: 1.4rem; }
             .row { grid-template-columns: 1fr 1.7fr 0.8fr 1.1fr 1.1fr 1.1fr; }
         }
         @media (max-width: 1280px) {
-            .value { font-size: 1rem; }
-            .value.spk { font-size: 1.25rem; }
-            .date { font-size: 0.8rem; }
-            .time { font-size: 0.75rem; }
+            .container {
+                grid-template-rows: minmax(5.4rem, 16vh) 1fr auto auto;
+            }
+            .header {
+                align-items: center;
+            }
+            .meta {
+                position: static;
+                margin-left: auto;
+                align-items: flex-end;
+                padding-bottom: 0;
+            }
+            .row {
+                grid-template-columns: 1fr 1.6fr 0.9fr 1fr 1fr 1fr;
+                gap: 0.65rem;
+            }
+        }
+        @media (max-width: 1024px) {
+            body {
+                overflow: auto;
+            }
+            .container {
+                height: auto;
+                min-height: 100dvh;
+            }
+            .rows {
+                overflow: auto;
+                mask-image: none;
+                -webkit-mask-image: none;
+            }
+            .rows-wrapper.animate {
+                animation: none !important;
+            }
+            .row {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
@@ -491,6 +447,16 @@ closeDBConnection($conn);
                 <div class="live">
                     <div class="dot"></div>
                     <div class="txt">LIVE UPDATE</div>
+                </div>
+                <div class="view-controls">
+                    <button type="button" class="btn-tv" id="btnScale" title="Toggle TV scale">
+                        <i class="fas fa-display"></i>
+                        TV Scale
+                    </button>
+                    <button type="button" class="btn-tv" id="btnFullscreen" title="Toggle fullscreen">
+                        <i class="fas fa-expand"></i>
+                        Fullscreen
+                    </button>
                 </div>
                 <div class="clock" id="headerClock">--:--:--</div>
                 <div class="meta-date" id="headerDate">-</div>
@@ -617,6 +583,9 @@ closeDBConnection($conn);
         let tickerOffset = 0;
         let tickerLastTs = null;
         let tickerRaf = null;
+        let tvScaleEnabled = false;
+        const btnScale = document.getElementById('btnScale');
+        const btnFullscreen = document.getElementById('btnFullscreen');
         // px per detik untuk kecepatan jalan ticker (nilai tetap)
         const tickerSpeed = 18;
         // Konfigurasi animasi scroll vertikal (rows running text)
@@ -719,6 +688,30 @@ closeDBConnection($conn);
             tickerOffset = 0;
             tickerTrack.style.transform = 'translateX(0px)';
             startTickerAnimation();
+        }
+
+        function applyTvScale(forceEnable = null) {
+            const shouldEnable = forceEnable === null ? !tvScaleEnabled : !!forceEnable;
+            tvScaleEnabled = shouldEnable;
+            document.documentElement.style.setProperty('--tv-scale', tvScaleEnabled ? '0.9' : '1');
+            if (btnScale) {
+                btnScale.innerHTML = tvScaleEnabled
+                    ? '<i class="fas fa-compress"></i> Normal Scale'
+                    : '<i class="fas fa-display"></i> TV Scale';
+            }
+            setTimeout(checkAndToggleAnimation, 150);
+        }
+
+        async function toggleFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (err) {
+                console.error('fullscreen error', err);
+            }
         }
 
         const initialTickerItems = <?php echo json_encode($tickerItems, JSON_UNESCAPED_UNICODE); ?>;
@@ -1060,6 +1053,10 @@ closeDBConnection($conn);
 
         // Start
         document.addEventListener('DOMContentLoaded', () => { 
+            const isLargeDisplay = window.innerWidth >= 1366 && window.innerHeight >= 768;
+            applyTvScale(isLargeDisplay);
+            if (btnScale) btnScale.addEventListener('click', () => applyTvScale());
+            if (btnFullscreen) btnFullscreen.addEventListener('click', toggleFullscreen);
             startSync(); 
             startTickerAnimation();
             // Cek animasi setelah DOM ready dengan delay lebih lama
