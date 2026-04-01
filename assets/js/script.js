@@ -276,9 +276,10 @@ function handleScheduleFormSubmit(event) {
     const form = event.target;
     const formData = new FormData(form);
     appendCsrfToken(formData);
-    appendCsrfToken(formData);
     const scheduleId = formData.get('schedule_id');
     const editModeFields = document.getElementById('editModeFields');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
     
     // Jika mode tambah (tidak ada schedule_id), gunakan status dari hidden field
     if (!scheduleId && editModeFields && editModeFields.style.display === 'none') {
@@ -297,8 +298,6 @@ function handleScheduleFormSubmit(event) {
     const opSlitting = formData.get('op_slitting');
     if (opSlitting && !opCetak) {
         showAlert('error', 'Operator cetak harus diisi terlebih dahulu sebelum operator slitting');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnText;
         return;
     }
     
@@ -312,8 +311,6 @@ function handleScheduleFormSubmit(event) {
         const dateSlitting = new Date(tanggalSlitting);
         if (dateSlitting < dateCetak) {
             showAlert('error', 'Tanggal mulai slitting harus setelah tanggal mulai cetak');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
             return;
         }
     }
@@ -326,9 +323,7 @@ function handleScheduleFormSubmit(event) {
     }
     
     formData.append('action', 'save_schedule');
-    
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     
@@ -368,9 +363,8 @@ function handleScheduleFormSubmit(event) {
         }
     })
     .catch(error => {
-        // Log error di console saja agar tidak membingungkan user
-        // (kadang delete berhasil di server, tapi response JSON error)
-        console.error('Error saat menghapus schedule:', error);
+        console.error('Error saat menyimpan schedule:', error);
+        showAlert('error', 'Terjadi kesalahan saat menyimpan schedule. Silakan coba lagi.');
     })
     .finally(() => {
         submitBtn.disabled = false;
