@@ -107,16 +107,18 @@ closeDBConnection($conn);
         .header {
             position: relative;
             display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-            padding: 1.5rem 2.5rem 1.6rem;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 1.4rem 0.75rem;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.10), rgba(0, 212, 255, 0.05));
             border-bottom: 3px solid var(--accent);
             box-shadow: 0 6px 24px rgba(0, 212, 255, 0.25);
+            overflow: hidden;
         }
         .brand { display: flex; align-items: center; gap: 1rem; }
         .brand .logo { 
-            height: 60px;
+            height: 42px;
             width: auto;
         }
         
@@ -142,8 +144,9 @@ closeDBConnection($conn);
             display: flex; flex-direction: column; gap: 0.2rem;
         }
         .brand .title h1 {
-            margin: 0; font-size: 2rem; font-weight: 900; letter-spacing: 2px; color: var(--accent);
+            margin: 0; font-size: 1.35rem; font-weight: 900; letter-spacing: 1px; color: var(--accent);
             text-shadow: 0 0 18px rgba(0, 212, 255, 0.55);
+            line-height: 1.1;
         }
         .ticker {
             overflow: hidden;
@@ -188,35 +191,41 @@ closeDBConnection($conn);
             color: var(--accent);
         }
         .meta { 
-            position: absolute;
-            top: 1.1rem;
-            right: 2.5rem;
+            position: static;
             display: flex; 
             flex-direction: column;
             align-items: flex-end; 
-            gap: 0.5rem; 
-            padding-bottom: 0.8rem;
+            justify-content: center;
+            gap: 0.32rem; 
+            padding-bottom: 0;
+            max-width: 42%;
+            flex-shrink: 0;
         }
         .clock { 
-            font-size: 1.2rem; 
+            font-size: 1rem; 
             font-weight: 800; 
             color: var(--text); 
             text-shadow: 0 0 16px rgba(0,212,255,0.45); 
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            line-height: 1;
+            white-space: nowrap;
         }
         .meta-date {
-            font-size: 0.9rem;
+            font-size: 0.72rem;
             color: var(--text-dim);
             text-align: right;
-            letter-spacing: 0.07em;
-            margin-bottom: 0.6rem;
+            letter-spacing: 0.03em;
+            margin-bottom: 0;
+            line-height: 1.1;
+            white-space: nowrap;
         }
         .live {
-            display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem;
-            border: 2px solid var(--accent); border-radius: 999px; background: rgba(0, 212, 255, 0.08);
+            display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.55rem;
+            border: 1px solid var(--accent); border-radius: 999px; background: rgba(0, 212, 255, 0.08);
+            max-width: 100%;
         }
-        .live .dot { width: 12px; height: 12px; border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; }
-        .live .txt { font-weight: 700; color: var(--accent); }
+        .live .dot { width: 9px; height: 9px; border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; flex-shrink: 0; }
+        .live .txt { font-weight: 700; color: var(--accent); font-size: 0.66rem; letter-spacing: 0.05em; white-space: nowrap; }
         @keyframes blink { 0%,100% {opacity:1} 50% {opacity:.4} }
 
         /* Board */
@@ -348,6 +357,18 @@ closeDBConnection($conn);
 
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
+            .brand .logo {
+                height: 36px;
+            }
+            .brand .title h1 {
+                font-size: 1.15rem;
+            }
+            .meta {
+                max-width: 48%;
+            }
+            .clock {
+                font-size: 0.92rem;
+            }
             .value { font-size: 0.85rem; }
             .value.spk { font-size: 1.05rem; }
             .row { grid-template-columns: 0.95fr 1.45fr 0.75fr 1fr 1fr 0.95fr; }
