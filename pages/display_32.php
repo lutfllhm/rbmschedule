@@ -120,7 +120,8 @@ closeDBConnection($conn);
             width: auto;
         }
         
-        .brand .logo img {
+        .brand .logo img,
+        .brand .logo svg {
             height: 100%;
             width: auto;
             object-fit: contain;
@@ -363,7 +364,18 @@ closeDBConnection($conn);
     <div class="container">
         <header class="header">
             <div class="brand">
-                <div class="logo"><img src="/rbmschedule/assets/img/iw.png" alt="RBM Logo"></div>
+                <div class="logo" aria-label="RBM Logo">
+                    <svg viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RBM">
+                        <defs>
+                            <linearGradient id="rbmStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#00d4ff" />
+                                <stop offset="100%" stop-color="#7ee7ff" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="4" y="4" width="212" height="72" rx="10" ry="10" fill="none" stroke="url(#rbmStroke)" stroke-width="3" />
+                        <text x="110" y="52" text-anchor="middle" font-family="Orbitron, Arial, sans-serif" font-size="38" font-weight="900" fill="#cfe8ff">RBM</text>
+                    </svg>
+                </div>
                 <div class="title">
                     <h1> RBM PRODUCTION SCHEDULE </h1>
                 </div>
