@@ -178,7 +178,7 @@ SHOW TABLES;
 exit
 
 # Import database manual
-docker exec -i rbmschedule-mysql mysql -u rbm_user -prbm_secure_password_2024 rbm_schedule < database.sql
+docker exec -i rbmschedule-mysql mysql -u rbm_user -pJasadenam66 rbm_schedule < database.sql
 
 # Verifikasi lagi
 docker exec -it rbmschedule-mysql mysql -u rbm_user -prbm_secure_password_2024 rbm_schedule -e "SHOW TABLES;"
