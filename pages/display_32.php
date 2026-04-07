@@ -93,7 +93,6 @@ closeDBConnection($conn);
             --finish: #3b82f6;
             --border: #1a3a5c;
             --glow: rgba(0, 212, 255, 0.6);
-            --tv-scale: 1;
         }
         * { box-sizing: border-box; }
         html, body { height: 100%; }
@@ -103,7 +102,6 @@ closeDBConnection($conn);
             color: var(--text);
             font-family: Arial, Helvetica, sans-serif;
             overflow: hidden; /* display dinding - tanpa scroll */
-            zoom: var(--tv-scale);
         }
         .container {
             width: 100%;
@@ -227,23 +225,6 @@ closeDBConnection($conn);
         }
         .live .dot { width: clamp(0.45rem, 0.75vw, 0.75rem); height: clamp(0.45rem, 0.75vw, 0.75rem); border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; }
         .live .txt { font-weight: 700; color: var(--accent); font-size: clamp(0.68rem, 0.85vw, 0.85rem); }
-        .view-controls {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-tv {
-            border: 1px solid rgba(0, 212, 255, 0.5);
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--text);
-            border-radius: 999px;
-            padding: 0.35rem 0.7rem;
-            font-size: clamp(0.65rem, 0.75vw, 0.8rem);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
         @keyframes blink { 0%,100% {opacity:1} 50% {opacity:.4} }
 
         /* Board */
@@ -385,11 +366,6 @@ closeDBConnection($conn);
             }
         }
 
-        /* Optimasi untuk layar 4K (3840x2160) */
-        @media (min-width: 3840px) {
-            :root { --tv-scale: 0.9; }
-        }
-
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
             .row { grid-template-columns: 1fr 1.7fr 0.8fr 1.1fr 1.1fr 1.1fr; }
@@ -447,16 +423,6 @@ closeDBConnection($conn);
                 <div class="live">
                     <div class="dot"></div>
                     <div class="txt">LIVE UPDATE</div>
-                </div>
-                <div class="view-controls">
-                    <button type="button" class="btn-tv" id="btnScale" title="Toggle TV scale">
-                        <i class="fas fa-display"></i>
-                        TV Scale
-                    </button>
-                    <button type="button" class="btn-tv" id="btnFullscreen" title="Toggle fullscreen">
-                        <i class="fas fa-expand"></i>
-                        Fullscreen
-                    </button>
                 </div>
                 <div class="clock" id="headerClock">--:--:--</div>
                 <div class="meta-date" id="headerDate">-</div>
@@ -583,9 +549,6 @@ closeDBConnection($conn);
         let tickerOffset = 0;
         let tickerLastTs = null;
         let tickerRaf = null;
-        let tvScaleEnabled = false;
-        const btnScale = document.getElementById('btnScale');
-        const btnFullscreen = document.getElementById('btnFullscreen');
         // px per detik untuk kecepatan jalan ticker (nilai tetap)
         const tickerSpeed = 18;
         // Konfigurasi animasi scroll vertikal (rows running text)
@@ -688,30 +651,6 @@ closeDBConnection($conn);
             tickerOffset = 0;
             tickerTrack.style.transform = 'translateX(0px)';
             startTickerAnimation();
-        }
-
-        function applyTvScale(forceEnable = null) {
-            const shouldEnable = forceEnable === null ? !tvScaleEnabled : !!forceEnable;
-            tvScaleEnabled = shouldEnable;
-            document.documentElement.style.setProperty('--tv-scale', tvScaleEnabled ? '0.9' : '1');
-            if (btnScale) {
-                btnScale.innerHTML = tvScaleEnabled
-                    ? '<i class="fas fa-compress"></i> Normal Scale'
-                    : '<i class="fas fa-display"></i> TV Scale';
-            }
-            setTimeout(checkAndToggleAnimation, 150);
-        }
-
-        async function toggleFullscreen() {
-            try {
-                if (!document.fullscreenElement) {
-                    await document.documentElement.requestFullscreen();
-                } else {
-                    await document.exitFullscreen();
-                }
-            } catch (err) {
-                console.error('fullscreen error', err);
-            }
         }
 
         const initialTickerItems = <?php echo json_encode($tickerItems, JSON_UNESCAPED_UNICODE); ?>;
@@ -1053,10 +992,6 @@ closeDBConnection($conn);
 
         // Start
         document.addEventListener('DOMContentLoaded', () => { 
-            const isLargeDisplay = window.innerWidth >= 1366 && window.innerHeight >= 768;
-            applyTvScale(isLargeDisplay);
-            if (btnScale) btnScale.addEventListener('click', () => applyTvScale());
-            if (btnFullscreen) btnFullscreen.addEventListener('click', toggleFullscreen);
             startSync(); 
             startTickerAnimation();
             // Cek animasi setelah DOM ready dengan delay lebih lama
