@@ -222,7 +222,7 @@ closeDBConnection($conn);
         /* Board */
         .board {
             height: 100%;
-            padding: 1.8rem 1.6rem 1.6rem;
+            padding: 1.1rem 1.1rem 1rem;
             display: flex; flex-direction: column; gap: 1rem;
             overflow: hidden; /* penting: tidak scroll */
         }
@@ -231,7 +231,7 @@ closeDBConnection($conn);
             flex: 1; 
             overflow: hidden; 
             position: relative;
-            padding-top: 1.5rem; /* Spacing yang cukup dari header */
+            padding-top: 0.7rem; /* Spacing yang cukup dari header */
             mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
         }
@@ -243,7 +243,7 @@ closeDBConnection($conn);
         .rows-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 0.9rem;
+            gap: 0.55rem;
             will-change: transform;
             transition: opacity 0.3s ease;
         }
@@ -265,23 +265,23 @@ closeDBConnection($conn);
             }
         }
         .row {
-            display: grid; grid-template-columns: 1.1fr 2fr 0.9fr 1.3fr 1.3fr 1.2fr; gap: 1.2rem; align-items: center;
+            display: grid; grid-template-columns: 1.05fr 1.85fr 0.8fr 1.2fr 1.2fr 1fr; gap: 0.75rem; align-items: center;
             background: linear-gradient(135deg, rgba(20,27,61,0.92), rgba(26,35,81,0.90));
-            border: 2px solid var(--border); border-radius: 12px; padding: 0.9rem 1.2rem;
+            border: 2px solid var(--border); border-radius: 10px; padding: 0.55rem 0.75rem;
             transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
         }
         .row:hover { border-color: var(--accent); box-shadow: 0 0 26px rgba(0, 212, 255, 0.28); transform: translateY(-2px); }
-        .cell { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
-        .label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-        .value { font-size: 1.15rem; color: var(--text); font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; }
-        .value.spk { font-size: 1.6rem; color: var(--accent); text-shadow: 0 0 12px var(--glow); }
+        .cell { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+        .label { font-size: 0.62rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+        .value { font-size: 0.92rem; color: var(--text); font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.15; }
+        .value.spk { font-size: 1.18rem; color: var(--accent); text-shadow: 0 0 12px var(--glow); }
         .value.small { 
-            font-size: 0.95rem; 
+            font-size: 0.76rem; 
             color: var(--text-dim); 
             font-weight: 600; 
             display: flex; 
             align-items: center; 
-            gap: 0.4rem; 
+            gap: 0.3rem; 
         }
         .value.small i { 
             display: inline-block; 
@@ -316,10 +316,10 @@ closeDBConnection($conn);
             margin-right: 0.25rem;
             vertical-align: middle;
         }
-        .date { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--text); margin-top: 0.25rem; }
-        .time { font-family: 'Orbitron', monospace; font-size: 0.85rem; color: var(--accent); margin-top: 0.15rem; }
+        .date { font-family: 'Orbitron', monospace; font-size: 0.72rem; color: var(--text); margin-top: 0.15rem; }
+        .time { font-family: 'Orbitron', monospace; font-size: 0.68rem; color: var(--accent); margin-top: 0.1rem; }
 
-        .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: 2px solid; border-radius: 999px; font-weight: 900; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 1px; }
+        .badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.6rem; border: 2px solid; border-radius: 999px; font-weight: 900; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; }
         .badge.pending,
         .badge.not-started { color: var(--pending); border-color: var(--pending); background: rgba(245, 158, 11, 0.12); }
         .badge.processing { color: var(--running); border-color: var(--running); background: rgba(16, 185, 129, 0.12); }
@@ -348,15 +348,15 @@ closeDBConnection($conn);
 
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
-            .value { font-size: 1.05rem; }
-            .value.spk { font-size: 1.4rem; }
-            .row { grid-template-columns: 1fr 1.7fr 0.8fr 1.1fr 1.1fr 1.1fr; }
+            .value { font-size: 0.85rem; }
+            .value.spk { font-size: 1.05rem; }
+            .row { grid-template-columns: 0.95fr 1.45fr 0.75fr 1fr 1fr 0.95fr; }
         }
         @media (max-width: 1280px) {
-            .value { font-size: 1rem; }
-            .value.spk { font-size: 1.25rem; }
-            .date { font-size: 0.8rem; }
-            .time { font-size: 0.75rem; }
+            .value { font-size: 0.8rem; }
+            .value.spk { font-size: 1rem; }
+            .date { font-size: 0.68rem; }
+            .time { font-size: 0.64rem; }
         }
     </style>
 </head>
@@ -365,7 +365,12 @@ closeDBConnection($conn);
         <header class="header">
             <div class="brand">
                 <div class="logo" aria-label="RBM Logo">
-                    <svg viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RBM">
+                    <img
+                        src="<?php echo BASE_URL; ?>/assets/img/iw.png"
+                        alt="RBM Logo"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    >
+                    <svg viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RBM" style="display:none;">
                         <defs>
                             <linearGradient id="rbmStroke" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" stop-color="#00d4ff" />
