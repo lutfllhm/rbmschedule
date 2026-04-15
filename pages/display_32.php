@@ -258,7 +258,7 @@ closeDBConnection($conn);
         }
         /* Animasi hanya aktif jika konten lebih tinggi dari container */
         .rows-wrapper.animate {
-            animation: scrollUp 80s linear infinite !important;
+            animation: scrollUp 600s linear infinite !important;
         }
         /* Pause animation saat hover (optional) */
         .rows:hover .rows-wrapper.animate {
@@ -539,11 +539,9 @@ closeDBConnection($conn);
         // px per detik untuk kecepatan jalan ticker (nilai tetap)
         const tickerSpeed = 18;
         // Konfigurasi animasi scroll vertikal (rows running text)
-        // Semakin besar PER_ROW_SECONDS => animasi lebih lambat
-        // Make vertical scrolling much slower and more readable
-        const ROW_SCROLL_MIN_DURATION = 60; // detik minimum
-        const ROW_SCROLL_MAX_DURATION = 900; // detik maksimum
-        const PER_ROW_SECONDS = 900; // detik per baris (scale) - sedikit lebih pelan
+        // Durasi yang lebih lama agar schedule bisa dibaca dengan nyaman
+        // Bahkan dengan 125+ schedule, kecepatan tetap lambat dan mudah dibaca
+        const SCROLL_DURATION_SECONDS = 600; // durasi tetap 600 detik (10 menit) untuk satu putaran penuh
 
         function buildTickerStats(list) {
             const stats = { total: 0, notStarted: 0, processing: 0, finish: 0 };
@@ -804,9 +802,9 @@ closeDBConnection($conn);
                     }
                     
                     // Hitung durasi animasi berdasarkan jumlah schedule
-                    // Gunakan konfigurasi constants di atas; durasi lebih lama => animasi lebih pelan
-                    const scheduleCount = actualRows.length;
-                    const baseDuration = Math.max(ROW_SCROLL_MIN_DURATION, Math.min(ROW_SCROLL_MAX_DURATION, scheduleCount * PER_ROW_SECONDS));
+                    // Hitung durasi animasi - gunakan durasi tetap agar kecepatan konsisten
+                    // Tidak peduli berapa banyak schedule, kecepatan scroll tetap sama
+                    const baseDuration = SCROLL_DURATION_SECONDS;
                     
                     // Hapus semua style yang bisa mengganggu animasi
                     wrapper.style.transform = '';
