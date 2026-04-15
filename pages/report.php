@@ -87,8 +87,10 @@ $monthDisplay = date('F Y', strtotime($dateFrom));
 $monthDisplayId = date('F Y', mktime(0, 0, 0, $month, 1, $year));
 
 $exportUrl = getPath('api/report_export.php');
+$exportExcelUrl = getPath('api/report_export_excel.php');
 if (!empty($filterParams)) {
     $exportUrl .= '?' . http_build_query($filterParams);
+    $exportExcelUrl .= '?' . http_build_query($filterParams);
 }
 
 closeDBConnection($conn);
@@ -123,8 +125,11 @@ closeDBConnection($conn);
                     <?php if ($filtersApplied): ?>
                     <a href="<?php echo getPath('pages/report.php'); ?>" class="btn btn-link btn-sm">Reset</a>
                     <?php endif; ?>
-                    <a href="<?php echo htmlspecialchars($exportUrl); ?>" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
-                        <i class="fas fa-file-export"></i> Export CSV
+                    <a href="<?php echo htmlspecialchars($exportUrl); ?>" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </a>
+                    <a href="<?php echo htmlspecialchars($exportExcelUrl); ?>" class="btn btn-primary btn-sm" target="_blank" rel="noopener">
+                        <i class="fas fa-file-excel"></i> Export Excel
                     </a>
                 </form>
             </div>

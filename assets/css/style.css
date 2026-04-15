@@ -712,6 +712,18 @@ textarea.form-control {
     justify-content: center;
 }
 
+.btn-link {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-link:hover {
+    background: var(--light-bg);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
 /* Alerts */
 .alert {
     padding: 1rem 1.25rem;
