@@ -118,7 +118,7 @@ closeDBConnection($conn);
         }
         .brand { display: flex; align-items: center; gap: 1rem; }
         .brand .logo { 
-            height: 48px;
+            height: 72px;
             width: auto;
         }
         
@@ -144,7 +144,7 @@ closeDBConnection($conn);
             display: flex; flex-direction: column; gap: 0.2rem;
         }
         .brand .title h1 {
-            margin: 0; font-size: 1.55rem; font-weight: 900; letter-spacing: 1.2px; color: var(--accent);
+            margin: 0; font-size: 2.4rem; font-weight: 900; letter-spacing: 1.2px; color: var(--accent);
             text-shadow: 0 0 18px rgba(0, 212, 255, 0.55);
             line-height: 1.1;
         }
@@ -358,10 +358,10 @@ closeDBConnection($conn);
         /* Responsif untuk resolusi kecil */
         @media (max-width: 1600px) {
             .brand .logo {
-                height: 40px;
+                height: 58px;
             }
             .brand .title h1 {
-                font-size: 1.25rem;
+                font-size: 2rem;
             }
             .meta {
                 max-width: 48%;
