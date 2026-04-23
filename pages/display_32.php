@@ -196,22 +196,22 @@ closeDBConnection($conn);
             flex-direction: column;
             align-items: flex-end; 
             justify-content: center;
-            gap: 0.32rem; 
+            gap: 0.4rem; 
             padding-bottom: 0;
-            max-width: 42%;
+            max-width: 50%;
             flex-shrink: 0;
         }
         .clock { 
-            font-size: 1rem; 
+            font-size: 2.8rem; 
             font-weight: 800; 
             color: var(--text); 
             text-shadow: 0 0 16px rgba(0,212,255,0.45); 
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             line-height: 1;
             white-space: nowrap;
         }
         .meta-date {
-            font-size: 0.72rem;
+            font-size: 1.1rem;
             color: var(--text-dim);
             text-align: right;
             letter-spacing: 0.03em;
@@ -220,12 +220,12 @@ closeDBConnection($conn);
             white-space: nowrap;
         }
         .live {
-            display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.55rem;
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.9rem;
             border: 1px solid var(--accent); border-radius: 999px; background: rgba(0, 212, 255, 0.08);
             max-width: 100%;
         }
-        .live .dot { width: 9px; height: 9px; border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; flex-shrink: 0; }
-        .live .txt { font-weight: 700; color: var(--accent); font-size: 0.66rem; letter-spacing: 0.05em; white-space: nowrap; }
+        .live .dot { width: 12px; height: 12px; border-radius: 40%; background: #00ff66; box-shadow: 0 0 12px #00ff66; animation: blink 1s infinite; flex-shrink: 0; }
+        .live .txt { font-weight: 700; color: var(--accent); font-size: 1rem; letter-spacing: 0.05em; white-space: nowrap; }
         @keyframes blink { 0%,100% {opacity:1} 50% {opacity:.4} }
 
         /* Board */
@@ -367,7 +367,7 @@ closeDBConnection($conn);
                 max-width: 48%;
             }
             .clock {
-                font-size: 0.92rem;
+                font-size: 2rem;
             }
             .value { font-size: 0.85rem; }
             .value.spk { font-size: 1.05rem; }
