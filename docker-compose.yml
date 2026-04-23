@@ -20,7 +20,8 @@ services:
       dockerfile: Dockerfile
     container_name: rbmschedule-app
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       APP_ENV: ${APP_ENV:-production}
       DEBUG_MODE: ${DEBUG_MODE:-false}
@@ -50,15 +51,16 @@ services:
     networks:
       - rbmschedule-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 networks:
   rbmschedule-network:
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: br-rbmschedule
-    ipam:
-      config:
-        - subnet: 172.25.0.0/16
 
 volumes:
   mysql_data:
