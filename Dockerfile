@@ -27,14 +27,17 @@ COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 # Copy application files
 COPY . /var/www/html/
 
+# Create required directories first
+RUN mkdir -p /var/www/html/backup \
+    && mkdir -p /var/www/html/logs \
+    && mkdir -p /var/www/html/sessions
+
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 775 /var/www/html/backup
-
-# Create logs directory
-RUN mkdir -p /var/www/html/logs \
-    && chown -R www-data:www-data /var/www/html/logs
+    && chmod -R 775 /var/www/html/backup \
+    && chmod -R 775 /var/www/html/logs \
+    && chmod -R 775 /var/www/html/sessions
 
 # Expose port 80
 EXPOSE 80
