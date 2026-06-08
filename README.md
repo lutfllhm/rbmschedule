@@ -33,7 +33,47 @@ Sistem manajemen jadwal produksi yang profesional untuk mengelola dan memantau j
 - Apache/Nginx web server
 - Extension PHP: mysqli, json, session
 
-### Langkah Instalasi
+**Atau dengan Docker (Recommended):**
+- Docker & Docker Compose
+- Server dengan Ubuntu 20.04+ atau Debian 10+
+- Minimal 1GB RAM
+
+### 🐳 Quick Start dengan Docker (Recommended)
+
+```bash
+# 1. Clone repository
+git clone <repository-url>
+cd rbmschedule
+
+# 2. Setup environment
+cp .env.example .env
+nano .env  # Edit password dan port
+
+# 3. Deploy dengan script
+chmod +x deploy.sh
+./deploy.sh
+
+# 4. Akses aplikasi
+# http://IP-SERVER:8090
+```
+
+**Login default:**
+- Username: `admin`
+- Password: `admin123`
+
+> ⚠️ **Segera ubah password setelah login!**
+
+### 📚 Dokumentasi Deployment Lengkap
+
+| Dokumen | Keterangan |
+|---------|------------|
+| [QUICK_START.md](QUICK_START.md) | Panduan cepat 5 menit |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Dokumentasi deployment lengkap |
+| [DEPLOY_README.md](DEPLOY_README.md) | Ringkasan deployment & commands |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Panduan troubleshooting |
+| [RESTORE_VPS.md](RESTORE_VPS.md) | Panduan restore dari backup |
+
+### Langkah Instalasi Manual
 
 1. **Clone atau download repository**
    ```bash

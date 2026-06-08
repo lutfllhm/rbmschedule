@@ -1,35 +1,65 @@
 version: '3.9'
+
 services:
+  # Web Application Service
   app:
     build: .
     container_name: rbmschedule_app
     ports:
-      - '8091:80'
+      - '${WEB_PORT:-8090}:80'
     environment:
-      - DB_HOST=db
-      - DB_USER=rbm_user
-      - DB_PASS=rbm_password
-      - DB_NAME=rbm_schedule
-      - DEBUG_MODE=false
+      DB_HOST: ${DB_HOST:-rbm-db}
+      DB_USER: ${DB_USER:-rbm_user}
+      DB_PASS: ${DB_PASS:-rbm_password}
+      DB_NAME: ${DB_NAME:-rbm_schedule}
+      DB_PORT: 3306
+      DEBUG_MODE: ${DEBUG_MODE:-false}
     depends_on:
-      - db
+      rbm-db:
+        condition: service_healthy
     volumes:
       - ./:/var/www/html:cached
+      - ./logs:/var/www/html/logs
+    networks:
+      - rbmschedule_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  db:
+  # MySQL Database Service
+  rbm-db:
     image: mysql:8.0
     container_name: rbmschedule_db
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - '${DB_PORT_EXTERNAL:-3308}:3306'
     environment:
-      - MYSQL_ROOT_PASSWORD=supersecret
-      - MYSQL_DATABASE=rbm_schedule
-      - MYSQL_USER=rbm_user
-      - MYSQL_PASSWORD=rbm_password
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-supersecret}
+      MYSQL_DATABASE: ${DB_NAME:-rbm_schedule}
+      MYSQL_USER: ${DB_USER:-rbm_user}
+      MYSQL_PASSWORD: ${DB_PASS:-rbm_password}
     volumes:
       - db_data:/var/lib/mysql
-      - ./database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+      - ./database.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backup:/backup:rw
+    networks:
+      - rbmschedule_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS:-supersecret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  rbmschedule_network:
+    driver: bridge
 
 volumes:
   db_data:
+    driver: local

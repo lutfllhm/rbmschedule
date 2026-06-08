@@ -1,0 +1,132 @@
+# ==============================================
+# RBM Schedule - Nginx Reverse Proxy Config
+# ==============================================
+# 
+# File ini adalah contoh konfigurasi Nginx sebagai reverse proxy
+# untuk aplikasi RBM Schedule yang berjalan di Docker
+#
+# Cara menggunakan:
+# 1. Install Nginx: sudo apt install nginx
+# 2. Copy file ini ke: /etc/nginx/sites-available/rbmschedule
+# 3. Edit domain dan port sesuai kebutuhan
+# 4. Enable site: sudo ln -s /etc/nginx/sites-available/rbmschedule /etc/nginx/sites-enabled/
+# 5. Test config: sudo nginx -t
+# 6. Reload: sudo systemctl reload nginx
+#
+# Untuk SSL dengan Let's Encrypt:
+# sudo certbot --nginx -d yourdomain.com
+# ==============================================
+
+# Redirect HTTP to HTTPS (uncomment after SSL setup)
+# server {
+#     listen 80;
+#     listen [::]:80;
+#     server_name yourdomain.com www.yourdomain.com;
+#     return 301 https://$server_name$request_uri;
+# }
+
+server {
+    listen 80;
+    listen [::]:80;
+    
+    # Ganti dengan domain Anda
+    server_name yourdomain.com www.yourdomain.com;
+    
+    # Untuk SSL, uncomment baris berikut dan jalankan certbot
+    # listen 443 ssl http2;
+    # listen [::]:443 ssl http2;
+    # ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    # ssl_protocols TLSv1.2 TLSv1.3;
+    # ssl_ciphers HIGH:!aNULL:!MD5;
+    # ssl_prefer_server_ciphers on;
+    
+    # Logs
+    access_log /var/log/nginx/rbmschedule-access.log;
+    error_log /var/log/nginx/rbmschedule-error.log;
+    
+    # Client upload size
+    client_max_body_size 20M;
+    
+    # Timeouts
+    proxy_connect_timeout 300;
+    proxy_send_timeout 300;
+    proxy_read_timeout 300;
+    
+    # Proxy to Docker container
+    location / {
+        # Ganti 8090 dengan port WEB_PORT di .env
+        proxy_pass http://localhost:8090;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $server_name;
+        
+        # WebSocket support (jika diperlukan)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # Buffer settings
+        proxy_buffering off;
+        proxy_buffer_size 4k;
+        proxy_buffers 8 4k;
+        proxy_busy_buffers_size 8k;
+    }
+    
+    # Server-Sent Events (SSE) untuk real-time updates
+    location /api/updates_stream.php {
+        proxy_pass http://localhost:8090;
+        
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        
+        # SSE specific settings
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+        chunked_transfer_encoding off;
+        
+        # Keep connection alive
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+    }
+    
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    
+    # Disable access to sensitive files
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+    
+    location ~ /\.env {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+    
+    # Disable access to backup files
+    location ~ /backup/ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+    
+    # Static files caching
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        proxy_pass http://localhost:8090;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+}
