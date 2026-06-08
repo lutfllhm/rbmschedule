@@ -1,75 +1,35 @@
-version: '3.8'
-
+version: '3.9'
 services:
-  # MySQL Database
-  rbm-db:
-    image: mysql:8.0
-    container_name: rbm-schedule-db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:Jasadenam66/}
-      MYSQL_DATABASE: ${DB_NAME:-rbm_schedule}
-      MYSQL_USER: ${DB_USER:-rbm_user}
-      MYSQL_PASSWORD: ${DB_PASS:Jasadenam66/}
-      TZ: Asia/Jakarta
-    volumes:
-      - rbm-db-data:/var/lib/mysql
-      - ./backup:/docker-entrypoint-initdb.d:ro
-      - ./docker/mysql-custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
-    # ports:
-      # - "${DB_PORT_EXTERNAL:-3307}:3306"  # Port external DISABLED untuk keamanan
-    # Database hanya bisa diakses dari internal Docker network
-    # Jika perlu akses dari host, uncomment baris di atas dan ganti port jika perlu
-    networks:
-      - rbm-network
-    command: --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS:-root_secure_password_123}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # PHP Apache Web Server
-  rbm-web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: rbm-schedule-web
-    restart: unless-stopped
-    depends_on:
-      rbm-db:
-        condition: service_healthy
-    environment:
-      APP_ENV: ${APP_ENV:-production}
-      DEBUG_MODE: ${DEBUG_MODE:-false}
-      DB_HOST: rbm-db
-      DB_PORT: 3306
-      DB_NAME: ${DB_NAME:-rbm_schedule}
-      DB_USER: ${DB_USER:-rbm_user}
-      DB_PASS: ${DB_PASS:-rbm_secure_pass_123}
-      TZ: Asia/Jakarta
-    volumes:
-      - ./backup:/var/www/html/backup
-      - ./logs:/var/www/html/logs
-      - rbm-web-sessions:/var/www/html/sessions
+  app:
+    build: .
+    container_name: rbmschedule_app
     ports:
-      - "${WEB_PORT:-8090}:80"  # Port 8090 untuk menghindari konflik
-    networks:
-      - rbm-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - '8091:80'
+    environment:
+      - DB_HOST=db
+      - DB_USER=rbm_user
+      - DB_PASS=rbm_password
+      - DB_NAME=rbm_schedule
+      - DEBUG_MODE=false
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www/html:cached
+    restart: unless-stopped
 
-networks:
-  rbm-network:
-    driver: bridge
-    name: rbm-schedule-network
+  db:
+    image: mysql:8.0
+    container_name: rbmschedule_db
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=supersecret
+      - MYSQL_DATABASE=rbm_schedule
+      - MYSQL_USER=rbm_user
+      - MYSQL_PASSWORD=rbm_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+    restart: unless-stopped
 
 volumes:
-  rbm-db-data:
-    name: rbm-schedule-db-data
-  rbm-web-sessions:
-    name: rbm-schedule-sessions
+  db_data:
