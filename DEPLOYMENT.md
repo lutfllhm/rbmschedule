@@ -5,10 +5,11 @@ Panduan mudah untuk deploy aplikasi RBM Schedule ke server production menggunaka
 ## 📋 Daftar Isi
 
 1. [Quick Start dengan Docker](#-quick-start-dengan-docker)
-2. [Konfigurasi Port](#-konfigurasi-port)
-3. [Backup & Restore](#-backup--restore-database)
-4. [Update Aplikasi](#-update-aplikasi)
-5. [Troubleshooting](#-troubleshooting)
+2. [Setup Domain & SSL Certificate](#-setup-domain--ssl-certificate)
+3. [Konfigurasi Port](#-konfigurasi-port)
+4. [Backup & Restore](#-backup--restore-database)
+5. [Update Aplikasi](#-update-aplikasi)
+6. [Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -613,7 +614,345 @@ Jika mengalami masalah:
 
 ---
 
-**🎉 Selamat! Aplikasi RBM Schedule sudah berhasil di-deploy!**
+---
+
+## 🌐 Setup Domain & SSL Certificate
+
+### Persiapan Domain
+
+Sebelum memulai, pastikan:
+- Domain sudah di-pointing ke IP server VPS
+- Record DNS sudah propagasi (bisa dicek dengan: `nslookup label.rbmlogistics.id`)
+
+### Langkah 1: Install Nginx
+
+```bash
+# Update package list
+sudo apt update
+
+# Install Nginx
+sudo apt install -y nginx
+
+# Verifikasi instalasi
+nginx -v
+
+# Start dan enable Nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# Cek status
+sudo systemctl status nginx
+```
+
+### Langkah 2: Setup Nginx Configuration
+
+```bash
+# Masuk ke direktori project
+cd /opt/rbmschedule
+
+# Copy file nginx config untuk domain label
+sudo cp nginx-label.conf /etc/nginx/sites-available/label-rbmschedule
+
+# Atau jika belum punya file, buat manual
+sudo nano /etc/nginx/sites-available/label-rbmschedule
+# Lalu copy isi dari nginx-label.conf
+```
+
+**Edit konfigurasi jika port berbeda:**
+```bash
+sudo nano /etc/nginx/sites-available/label-rbmschedule
+
+# Cari baris ini dan sesuaikan port dengan WEB_PORT di .env
+# proxy_pass http://127.0.0.1:8090;
+# Ganti 8090 dengan port yang Anda gunakan
+```
+
+### Langkah 3: Enable Site
+
+```bash
+# Buat symbolic link ke sites-enabled
+sudo ln -s /etc/nginx/sites-available/label-rbmschedule /etc/nginx/sites-enabled/
+
+# Hapus default site (opsional)
+sudo rm /etc/nginx/sites-enabled/default
+
+# Test konfigurasi Nginx
+sudo nginx -t
+
+# Output yang diharapkan:
+# nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+# nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+**Jika ada error saat nginx -t:**
+```bash
+# Cek detail error
+sudo nginx -t
+
+# Cek log nginx
+sudo tail -f /var/log/nginx/error.log
+```
+
+### Langkah 4: Reload Nginx (Tanpa SSL dulu)
+
+```bash
+# Sebelum setup SSL, comment dulu bagian SSL di config
+sudo nano /etc/nginx/sites-available/label-rbmschedule
+
+# Comment baris SSL certificate (tambahkan # di depan):
+# ssl_certificate /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem;
+# ssl_certificate_key /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem;
+
+# Dan ubah server block HTTPS menjadi HTTP dulu:
+# Ganti:
+#   listen 443 ssl http2;
+# Menjadi:
+#   listen 80;
+
+# Comment juga redirect server block (yang pertama)
+
+# Test dan reload
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Langkah 5: Install Certbot (Let's Encrypt)
+
+```bash
+# Install Certbot dan plugin Nginx
+sudo apt install -y certbot python3-certbot-nginx
+
+# Verifikasi instalasi
+certbot --version
+```
+
+### Langkah 6: Setup SSL Certificate
+
+**Cara Otomatis (Direkomendasikan):**
+
+```bash
+# Jalankan Certbot untuk domain label.rbmlogistics.id
+sudo certbot --nginx -d label.rbmlogistics.id
+
+# Certbot akan menanyakan beberapa hal:
+# 1. Email address (untuk notifikasi renewal): masukkan email Anda
+# 2. Agree to Terms of Service: Y (yes)
+# 3. Share email with EFF: N (no) atau Y (terserah)
+# 4. Redirect HTTP to HTTPS: 2 (redirect - direkomendasikan)
+
+# Tunggu hingga selesai (biasanya 1-2 menit)
+```
+
+**Output yang berhasil:**
+```
+Congratulations! You have successfully enabled HTTPS on https://label.rbmlogistics.id
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem
+   Your certificate will expire on 2026-09-08.
+```
+
+**Cara Manual (jika otomatis gagal):**
+
+```bash
+# Generate certificate saja tanpa auto-configure
+sudo certbot certonly --nginx -d label.rbmlogistics.id
+
+# Lalu edit nginx config manual
+sudo nano /etc/nginx/sites-available/label-rbmschedule
+
+# Uncomment baris SSL:
+ssl_certificate /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem;
+
+# Ubah kembali listen port menjadi HTTPS:
+listen 443 ssl http2;
+listen [::]:443 ssl http2;
+
+# Uncomment redirect HTTP to HTTPS (server block pertama)
+
+# Test dan reload
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Langkah 7: Verifikasi SSL
+
+```bash
+# Test akses HTTPS
+curl -I https://label.rbmlogistics.id
+
+# Cek certificate details
+openssl s_client -connect label.rbmlogistics.id:443 -servername label.rbmlogistics.id < /dev/null
+
+# Cek SSL rating (opsional)
+# Buka browser: https://www.ssllabs.com/ssltest/
+# Masukkan domain: label.rbmlogistics.id
+```
+
+**Buka di browser:**
+```
+https://label.rbmlogistics.id
+```
+
+Pastikan:
+- ✅ Ada icon gembok (🔒) di address bar
+- ✅ Tidak ada warning certificate
+- ✅ HTTP otomatis redirect ke HTTPS
+
+### Langkah 8: Setup Auto-Renewal SSL
+
+Certbot sudah otomatis setup cron job untuk renewal, tapi kita perlu test:
+
+```bash
+# Test renewal
+sudo certbot renew --dry-run
+
+# Output yang diharapkan:
+# Congratulations, all simulated renewals succeeded
+
+# Cek cron job (Ubuntu/Debian)
+sudo systemctl list-timers | grep certbot
+
+# Atau cek service
+sudo systemctl status certbot.timer
+```
+
+**Manual renewal (jika diperlukan):**
+```bash
+# Renew semua certificate
+sudo certbot renew
+
+# Renew certificate tertentu
+sudo certbot renew --cert-name label.rbmlogistics.id
+
+# Reload nginx setelah renewal
+sudo systemctl reload nginx
+```
+
+### Langkah 9: Setup Firewall (UFW)
+
+```bash
+# Install UFW (jika belum ada)
+sudo apt install -y ufw
+
+# Allow SSH (PENTING! Agar tidak terkunci)
+sudo ufw allow 22/tcp
+sudo ufw allow OpenSSH
+
+# Allow HTTP dan HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Allow port aplikasi Docker (jika perlu akses langsung)
+# sudo ufw allow 8090/tcp
+
+# Enable firewall
+sudo ufw enable
+
+# Konfirmasi dengan: y (yes)
+
+# Cek status
+sudo ufw status verbose
+
+# Output yang diharapkan:
+# Status: active
+# To                         Action      From
+# --                         ------      ----
+# 22/tcp                     ALLOW       Anywhere
+# 80/tcp                     ALLOW       Anywhere
+# 443/tcp                    ALLOW       Anywhere
+```
+
+### Troubleshooting SSL
+
+#### Problem: Certbot gagal dengan error "Unable to find a virtual host"
+
+**Solusi:**
+```bash
+# Pastikan config nginx sudah benar
+sudo nginx -t
+
+# Pastikan server_name sudah benar
+sudo grep -r "server_name" /etc/nginx/sites-enabled/
+
+# Reload nginx
+sudo systemctl reload nginx
+
+# Coba lagi certbot
+sudo certbot --nginx -d label.rbmlogistics.id
+```
+
+#### Problem: Domain tidak bisa diakses dari luar
+
+**Solusi:**
+```bash
+# Cek DNS propagation
+nslookup label.rbmlogistics.id
+dig label.rbmlogistics.id
+
+# Cek firewall
+sudo ufw status
+
+# Pastikan port 80 dan 443 terbuka
+sudo netstat -tlnp | grep nginx
+
+# Test dari server sendiri
+curl -I http://localhost:8090
+curl -I http://label.rbmlogistics.id
+```
+
+#### Problem: "ERR_SSL_PROTOCOL_ERROR" di browser
+
+**Solusi:**
+```bash
+# Cek certificate path
+sudo ls -la /etc/letsencrypt/live/label.rbmlogistics.id/
+
+# Cek nginx config
+sudo nginx -t
+
+# Cek nginx error log
+sudo tail -f /var/log/nginx/error.log
+
+# Restart nginx
+sudo systemctl restart nginx
+```
+
+#### Problem: Certificate akan expire
+
+**Setup email notification:**
+```bash
+# Edit certbot renewal config
+sudo nano /etc/letsencrypt/renewal/label.rbmlogistics.id.conf
+
+# Pastikan ada email address
+
+# Test renewal
+sudo certbot renew --dry-run
+```
+
+### Checklist Setup SSL ✅
+
+- [ ] Domain sudah pointing ke IP server
+- [ ] Nginx terinstall dan berjalan
+- [ ] Nginx config sudah di-setup dengan benar
+- [ ] Site sudah di-enable di sites-enabled
+- [ ] `nginx -t` tidak ada error
+- [ ] Certbot terinstall
+- [ ] SSL certificate berhasil di-generate
+- [ ] HTTPS bisa diakses dan ada icon gembok
+- [ ] HTTP auto-redirect ke HTTPS
+- [ ] Auto-renewal sudah di-test
+- [ ] Firewall sudah di-setup (port 80, 443, 22)
+- [ ] SSLLabs rating A atau A+ (opsional)
+
+---
+
+**🎉 Selamat! Aplikasi RBM Schedule sudah berhasil di-deploy dengan SSL Certificate!**
 
 **Dokumentasi dibuat untuk RBM Schedule v1.0.0**  
-**Last updated: Juni 2024**
+**Last updated: Juni 2026**
