@@ -1,12 +1,47 @@
+# Git files
 .git
+.gitignore
 .github
-.kombai
-node_modules
-vendor
-logs/*.log
-*.log
-*.tmp
-*.cache
+
+# Environment files (akan di-copy manual)
 .env
 .env.local
-.env.*.local
+
+# Documentation
+*.md
+!CHANGELOG.md
+
+# Logs
+logs/*
+*.log
+
+# Backup files (kecuali untuk init database)
+backup/*.sql
+!backup/backup_*.sql
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode
+.idea
+*.sublime-*
+
+# Node modules (jika ada)
+node_modules
+
+# Composer (jika ada)
+vendor
+
+# Docker files development
+docker-compose.override.yml
+Dockerfile.dev
