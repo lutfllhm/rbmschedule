@@ -7,17 +7,19 @@ services:
     container_name: rbm-schedule-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-root_secure_password_123}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:Jasadenam66/}
       MYSQL_DATABASE: ${DB_NAME:-rbm_schedule}
       MYSQL_USER: ${DB_USER:-rbm_user}
-      MYSQL_PASSWORD: ${DB_PASS:-rbm_secure_pass_123}
+      MYSQL_PASSWORD: ${DB_PASS:Jasadenam66/}
       TZ: Asia/Jakarta
     volumes:
       - rbm-db-data:/var/lib/mysql
       - ./backup:/docker-entrypoint-initdb.d:ro
       - ./docker/mysql-custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
-    ports:
-      - "${DB_PORT_EXTERNAL:-3307}:3306"  # Port external untuk akses dari host
+    # ports:
+      # - "${DB_PORT_EXTERNAL:-3307}:3306"  # Port external DISABLED untuk keamanan
+    # Database hanya bisa diakses dari internal Docker network
+    # Jika perlu akses dari host, uncomment baris di atas dan ganti port jika perlu
     networks:
       - rbm-network
     command: --default-authentication-plugin=mysql_native_password
