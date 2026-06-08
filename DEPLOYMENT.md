@@ -621,8 +621,19 @@ Jika mengalami masalah:
 ### Persiapan Domain
 
 Sebelum memulai, pastikan:
-- Domain sudah di-pointing ke IP server VPS
-- Record DNS sudah propagasi (bisa dicek dengan: `nslookup label.rbmlogistics.id`)
+- Subdomain `labelschedule.iwareid.com` sudah di-pointing ke IP server VPS
+- Record DNS sudah propagasi (bisa dicek dengan: `nslookup labelschedule.iwareid.com`)
+
+**Cek DNS dari server:**
+```bash
+# Cek apakah subdomain sudah pointing ke server ini
+nslookup labelschedule.iwareid.com
+
+# Atau dengan dig
+dig labelschedule.iwareid.com
+
+# Pastikan IP yang muncul sama dengan IP server VPS Anda
+```
 
 ### Langkah 1: Install Nginx
 
@@ -650,30 +661,30 @@ sudo systemctl status nginx
 # Masuk ke direktori project
 cd /opt/rbmschedule
 
-# Copy file nginx config untuk domain label
-sudo cp nginx-label.conf /etc/nginx/sites-available/label-rbmschedule
+# Copy file nginx config untuk subdomain labelschedule
+sudo cp nginx-label.conf /etc/nginx/sites-available/labelschedule
 
 # Atau jika belum punya file, buat manual
-sudo nano /etc/nginx/sites-available/label-rbmschedule
+sudo nano /etc/nginx/sites-available/labelschedule
 # Lalu copy isi dari nginx-label.conf
 ```
 
 **Edit konfigurasi jika port berbeda:**
 ```bash
-sudo nano /etc/nginx/sites-available/label-rbmschedule
+sudo nano /etc/nginx/sites-available/labelschedule
 
 # Cari baris ini dan sesuaikan port dengan WEB_PORT di .env
 # proxy_pass http://127.0.0.1:8090;
-# Ganti 8090 dengan port yang Anda gunakan
+# Ganti 8090 dengan port yang Anda gunakan (misal: 8095)
 ```
 
 ### Langkah 3: Enable Site
 
 ```bash
 # Buat symbolic link ke sites-enabled
-sudo ln -s /etc/nginx/sites-available/label-rbmschedule /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/labelschedule /etc/nginx/sites-enabled/
 
-# Hapus default site (opsional)
+# Hapus default site (opsional, jika tidak ada aplikasi lain)
 sudo rm /etc/nginx/sites-enabled/default
 
 # Test konfigurasi Nginx
@@ -691,30 +702,41 @@ sudo nginx -t
 
 # Cek log nginx
 sudo tail -f /var/log/nginx/error.log
+
+# Pastikan tidak ada typo di config
+sudo cat /etc/nginx/sites-enabled/labelschedule
 ```
 
-### Langkah 4: Reload Nginx (Tanpa SSL dulu)
+### Langkah 4: Reload Nginx
 
 ```bash
-# Sebelum setup SSL, comment dulu bagian SSL di config
-sudo nano /etc/nginx/sites-available/label-rbmschedule
-
-# Comment baris SSL certificate (tambahkan # di depan):
-# ssl_certificate /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem;
-# ssl_certificate_key /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem;
-
-# Dan ubah server block HTTPS menjadi HTTP dulu:
-# Ganti:
-#   listen 443 ssl http2;
-# Menjadi:
-#   listen 80;
-
-# Comment juga redirect server block (yang pertama)
-
-# Test dan reload
-sudo nginx -t
+# Reload Nginx untuk apply konfigurasi
 sudo systemctl reload nginx
+
+# Atau restart jika reload gagal
+sudo systemctl restart nginx
+
+# Cek status nginx
+sudo systemctl status nginx
+
+# Output yang diharapkan: active (running)
 ```
+
+**Test akses HTTP (tanpa SSL dulu):**
+```bash
+# Test dari server
+curl -I http://localhost:8090
+curl -I http://labelschedule.iwareid.com
+
+# Harusnya dapat response 200 OK atau 302
+```
+
+**Test dari browser:**
+```
+http://labelschedule.iwareid.com
+```
+
+Pastikan aplikasi bisa diakses dengan HTTP dulu sebelum lanjut ke SSL.
 
 ### Langkah 5: Install Certbot (Let's Encrypt)
 
@@ -728,51 +750,55 @@ certbot --version
 
 ### Langkah 6: Setup SSL Certificate
 
-**Cara Otomatis (Direkomendasikan):**
+**⚠️ PENTING: Pastikan aplikasi sudah bisa diakses via HTTP dulu!**
+
+**Cara Otomatis dengan Certbot (Direkomendasikan):**
 
 ```bash
-# Jalankan Certbot untuk domain label.rbmlogistics.id
-sudo certbot --nginx -d label.rbmlogistics.id
+# Jalankan Certbot untuk subdomain labelschedule.iwareid.com
+sudo certbot --nginx -d labelschedule.iwareid.com
 
 # Certbot akan menanyakan beberapa hal:
 # 1. Email address (untuk notifikasi renewal): masukkan email Anda
+#    Contoh: admin@iwareid.com atau email pribadi Anda
+# 
 # 2. Agree to Terms of Service: Y (yes)
-# 3. Share email with EFF: N (no) atau Y (terserah)
-# 4. Redirect HTTP to HTTPS: 2 (redirect - direkomendasikan)
+# 
+# 3. Share email with EFF: N (no) atau Y (terserah Anda)
+# 
+# 4. Redirect HTTP to HTTPS: 2 (pilih opsi redirect - direkomendasikan)
+#    Ini akan otomatis redirect semua HTTP ke HTTPS
 
 # Tunggu hingga selesai (biasanya 1-2 menit)
 ```
 
 **Output yang berhasil:**
 ```
-Congratulations! You have successfully enabled HTTPS on https://label.rbmlogistics.id
+Congratulations! You have successfully enabled HTTPS on https://labelschedule.iwareid.com
 
 IMPORTANT NOTES:
  - Congratulations! Your certificate and chain have been saved at:
-   /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem
+   /etc/letsencrypt/live/labelschedule.iwareid.com/fullchain.pem
    Your key file has been saved at:
-   /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem
+   /etc/letsencrypt/live/labelschedule.iwareid.com/privkey.pem
    Your certificate will expire on 2026-09-08.
+   To obtain a new or tweaked version of this certificate in the future, simply run certbot again with the "certonly" option.
 ```
 
 **Cara Manual (jika otomatis gagal):**
 
 ```bash
 # Generate certificate saja tanpa auto-configure
-sudo certbot certonly --nginx -d label.rbmlogistics.id
+sudo certbot certonly --nginx -d labelschedule.iwareid.com
 
-# Lalu edit nginx config manual
-sudo nano /etc/nginx/sites-available/label-rbmschedule
+# Atau dengan webroot (jika nginx method gagal)
+sudo certbot certonly --webroot -w /var/www/html -d labelschedule.iwareid.com
 
-# Uncomment baris SSL:
-ssl_certificate /etc/letsencrypt/live/label.rbmlogistics.id/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/label.rbmlogistics.id/privkey.pem;
+# Setelah certificate di-generate, uncomment section HTTPS di config
+sudo nano /etc/nginx/sites-available/labelschedule
 
-# Ubah kembali listen port menjadi HTTPS:
-listen 443 ssl http2;
-listen [::]:443 ssl http2;
-
-# Uncomment redirect HTTP to HTTPS (server block pertama)
+# Uncomment seluruh section HTTPS server di paling bawah file
+# (Hapus tanda # di depan setiap baris)
 
 # Test dan reload
 sudo nginx -t
@@ -783,25 +809,33 @@ sudo systemctl reload nginx
 
 ```bash
 # Test akses HTTPS
-curl -I https://label.rbmlogistics.id
+curl -I https://labelschedule.iwareid.com
+
+# Output yang diharapkan: HTTP/2 200 (atau 302)
 
 # Cek certificate details
-openssl s_client -connect label.rbmlogistics.id:443 -servername label.rbmlogistics.id < /dev/null
+echo | openssl s_client -connect labelschedule.iwareid.com:443 -servername labelschedule.iwareid.com 2>/dev/null | openssl x509 -noout -dates
 
-# Cek SSL rating (opsional)
+# Output yang diharapkan:
+# notBefore=Jun  8 00:00:00 2026 GMT
+# notAfter=Sep  8 23:59:59 2026 GMT
+
+# Cek SSL rating (opsional - dari server lain atau komputer lokal)
 # Buka browser: https://www.ssllabs.com/ssltest/
-# Masukkan domain: label.rbmlogistics.id
+# Masukkan domain: labelschedule.iwareid.com
 ```
 
 **Buka di browser:**
 ```
-https://label.rbmlogistics.id
+https://labelschedule.iwareid.com
 ```
 
-Pastikan:
+**Checklist Verifikasi:**
 - ✅ Ada icon gembok (🔒) di address bar
 - ✅ Tidak ada warning certificate
-- ✅ HTTP otomatis redirect ke HTTPS
+- ✅ HTTP otomatis redirect ke HTTPS (coba akses http://labelschedule.iwareid.com)
+- ✅ Certificate valid dan issued by "Let's Encrypt"
+- ✅ Aplikasi berjalan normal (bisa login)
 
 ### Langkah 8: Setup Auto-Renewal SSL
 
@@ -827,7 +861,10 @@ sudo systemctl status certbot.timer
 sudo certbot renew
 
 # Renew certificate tertentu
-sudo certbot renew --cert-name label.rbmlogistics.id
+sudo certbot renew --cert-name labelschedule.iwareid.com
+
+# Force renew (untuk testing)
+sudo certbot renew --cert-name labelschedule.iwareid.com --force-renewal
 
 # Reload nginx setelah renewal
 sudo systemctl reload nginx
@@ -873,17 +910,83 @@ sudo ufw status verbose
 
 **Solusi:**
 ```bash
-# Pastikan config nginx sudah benar
+# Pastikan config nginx sudah benar dan tidak ada syntax error
 sudo nginx -t
 
 # Pastikan server_name sudah benar
-sudo grep -r "server_name" /etc/nginx/sites-enabled/
+sudo grep "server_name" /etc/nginx/sites-enabled/labelschedule
+
+# Output yang diharapkan:
+# server_name labelschedule.iwareid.com;
 
 # Reload nginx
 sudo systemctl reload nginx
 
 # Coba lagi certbot
-sudo certbot --nginx -d label.rbmlogistics.id
+sudo certbot --nginx -d labelschedule.iwareid.com
+```
+
+#### Problem: "Connection refused" atau subdomain tidak bisa diakses
+
+**Solusi:**
+```bash
+# 1. Cek DNS propagation
+nslookup labelschedule.iwareid.com
+dig labelschedule.iwareid.com
+
+# Pastikan IP yang muncul adalah IP server VPS Anda
+# Jika IP salah atau tidak ada, perbaiki DNS record di control panel domain
+
+# 2. Cek Docker container berjalan
+docker-compose ps
+
+# 3. Cek nginx running
+sudo systemctl status nginx
+
+# 4. Test dari server langsung
+curl -I http://localhost:8090
+curl -I http://labelschedule.iwareid.com
+
+# 5. Cek firewall
+sudo ufw status
+
+# 6. Cek port listening
+sudo netstat -tlnp | grep nginx
+sudo netstat -tlnp | grep 8090
+```
+
+#### Problem: Certbot error "Failed authorization procedure"
+
+**Kemungkinan penyebab:**
+1. DNS belum pointing ke server
+2. Firewall block port 80
+3. Nginx tidak bisa akses /.well-known/
+
+**Solusi:**
+```bash
+# 1. Pastikan DNS sudah benar
+nslookup labelschedule.iwareid.com
+
+# 2. Pastikan firewall allow port 80
+sudo ufw allow 80/tcp
+sudo ufw status
+
+# 3. Test akses HTTP dari luar
+# Dari komputer lain atau HP: http://labelschedule.iwareid.com
+
+# 4. Coba method webroot
+sudo mkdir -p /var/www/html
+sudo certbot certonly --webroot -w /var/www/html -d labelschedule.iwareid.com
+
+# 5. Atau pakai standalone (stop nginx dulu)
+sudo systemctl stop nginx
+sudo certbot certonly --standalone -d labelschedule.iwareid.com
+sudo systemctl start nginx
+
+# Setelah berhasil, uncomment section HTTPS di config
+sudo nano /etc/nginx/sites-available/labelschedule
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
 #### Problem: Domain tidak bisa diakses dari luar
@@ -891,8 +994,8 @@ sudo certbot --nginx -d label.rbmlogistics.id
 **Solusi:**
 ```bash
 # Cek DNS propagation
-nslookup label.rbmlogistics.id
-dig label.rbmlogistics.id
+nslookup labelschedule.iwareid.com
+dig labelschedule.iwareid.com
 
 # Cek firewall
 sudo ufw status
@@ -902,7 +1005,7 @@ sudo netstat -tlnp | grep nginx
 
 # Test dari server sendiri
 curl -I http://localhost:8090
-curl -I http://label.rbmlogistics.id
+curl -I http://labelschedule.iwareid.com
 ```
 
 #### Problem: "ERR_SSL_PROTOCOL_ERROR" di browser
@@ -927,28 +1030,34 @@ sudo systemctl restart nginx
 **Setup email notification:**
 ```bash
 # Edit certbot renewal config
-sudo nano /etc/letsencrypt/renewal/label.rbmlogistics.id.conf
+sudo nano /etc/letsencrypt/renewal/labelschedule.iwareid.com.conf
 
 # Pastikan ada email address
 
-# Test renewal
+# Test renewal dengan dry-run
 sudo certbot renew --dry-run
+
+# Lihat log renewal
+sudo cat /var/log/letsencrypt/letsencrypt.log
 ```
 
 ### Checklist Setup SSL ✅
 
-- [ ] Domain sudah pointing ke IP server
+- [ ] Subdomain `labelschedule.iwareid.com` sudah pointing ke IP server
+- [ ] DNS sudah propagasi (cek dengan nslookup)
+- [ ] Docker container aplikasi berjalan (docker-compose ps)
+- [ ] Aplikasi bisa diakses via HTTP dulu (http://labelschedule.iwareid.com)
 - [ ] Nginx terinstall dan berjalan
-- [ ] Nginx config sudah di-setup dengan benar
-- [ ] Site sudah di-enable di sites-enabled
+- [ ] Nginx config file di `/etc/nginx/sites-available/labelschedule`
+- [ ] Site sudah di-enable di `/etc/nginx/sites-enabled/`
 - [ ] `nginx -t` tidak ada error
 - [ ] Certbot terinstall
 - [ ] SSL certificate berhasil di-generate
-- [ ] HTTPS bisa diakses dan ada icon gembok
+- [ ] HTTPS bisa diakses dan ada icon gembok (https://labelschedule.iwareid.com)
 - [ ] HTTP auto-redirect ke HTTPS
-- [ ] Auto-renewal sudah di-test
+- [ ] Auto-renewal sudah di-test (certbot renew --dry-run)
 - [ ] Firewall sudah di-setup (port 80, 443, 22)
-- [ ] SSLLabs rating A atau A+ (opsional)
+- [ ] SSLLabs rating A atau A+ (opsional tapi direkomendasikan)
 
 ---
 
