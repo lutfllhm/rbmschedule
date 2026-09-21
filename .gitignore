@@ -63,4 +63,7 @@ package-lock.json
 uploads/
 files/
 
+# Aplikasi mobile (Flutter) - dikelola terpisah, tidak ikut repo web
+mobile/
+
 

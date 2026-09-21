@@ -4,6 +4,18 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /rbmschedule/
+
+    # Teruskan header Authorization ke PHP.
+    # Apache membuang header ini secara default, sehingga token Bearer dari
+    # aplikasi mobile tidak pernah sampai ke $_SERVER['HTTP_AUTHORIZATION'].
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+# Cara kedua agar header Authorization tetap diteruskan pada konfigurasi
+# Apache yang tidak menjalankan aturan rewrite di atas.
+<IfModule mod_setenvif.c>
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </IfModule>
 
 # Security Headers
